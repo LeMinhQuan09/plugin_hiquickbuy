@@ -89,29 +89,6 @@ Ví dụ:
 
 ---
 
-## 🔄 Tự động cập nhật (GitHub Auto-Update)
-
-Plugin tự động kiểm tra bản phát hành mới từ `LeMinhQuan09/plugin_hiquickbuy` (cache 6 giờ) và hiển thị thông báo cập nhật ngay trong **WP Admin → Plugins**, kèm nút **Kiểm tra cập nhật** thủ công 1 chạm.
-
-- **Với Public Repository:** Hoạt động tự động hoàn toàn, không cần cấu hình thêm.
-- **Với Private Repository:** Thêm Fine-grained Personal Access Token (quyền `Contents: Read-only`) vào `wp-config.php`:
-  ```php
-  define( 'HIQB_GITHUB_TOKEN', 'github_pat_xxxxxxxxxxxxxxxx' );
-  ```
-
-### Quy trình phát hành bản mới (cho Developer)
-1. Cập nhật số phiên bản trong `hi-quick-buy.php` (`Version:` và `HIQB_VERSION`).
-2. Commit và đẩy tag mới:
-   ```bash
-   git add .
-   git commit -m "Release v1.0.1"
-   git tag v1.0.1
-   git push origin main --tags
-   ```
-3. GitHub Actions (`.github/workflows/release.yml`) sẽ tự động kiểm tra cú pháp PHP, đóng gói `hi-quick-buy.zip` sạch và xuất bản GitHub Release.
-
----
-
 ## 🛠️ Hooks & Filters dành cho Developer
 
 | Filter Hook | Mô tả |
@@ -167,3 +144,4 @@ hi-quick-buy/
 
 - **Tác giả:** [hiseo](https://hiseo.vn)
 - **Giấy phép:** [GPL-2.0-or-later](https://www.gnu.org/licenses/gpl-2.0.html)
+
