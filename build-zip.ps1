@@ -63,15 +63,12 @@ function New-PosixZip {
     }
 }
 
-$latestZip = Join-Path $distDir 'hi-quick-buy.zip'
 $versionedZip = Join-Path $distDir ("hi-quick-buy-$version.zip")
 
-New-PosixZip -SourceDir $stageRoot -ZipPath $latestZip
-Copy-Item -Path $latestZip -Destination $versionedZip -Force
+New-PosixZip -SourceDir $stageRoot -ZipPath $versionedZip
 
 Remove-Item -Path $stageRoot -Recurse -Force
 
-$sizeKb = [Math]::Round((Get-Item $latestZip).Length / 1KB, 1)
-Write-Output "Built clean plugin ZIP ($sizeKb KB):"
-Write-Output " - $latestZip"
-Write-Output " - $versionedZip"
+$sizeKb = [Math]::Round((Get-Item $versionedZip).Length / 1KB, 1)
+Write-Output "Built clean plugin ZIP ($sizeKb KB): $versionedZip"
+
