@@ -29,6 +29,8 @@ jobs:
           mkdir -p /tmp/hi-quick-buy
           rsync -av --exclude='.git*' \
             --exclude='.github' \
+            --exclude='dist' \
+            --exclude='build-zip.ps1' \
             --exclude='tinh.csv' \
             --exclude='xa.csv' \
             --exclude='playground-blueprint.json' \
