@@ -139,8 +139,12 @@ final class Settings {
 			$sanitized[ $key ] = ! empty( $input[ $key ] ) ? 1 : 0;
 		}
 
-		// Ensure at least one payment method stays enabled if payment selection is active.
-		if ( 0 === $sanitized['enable_cod'] && 0 === $sanitized['enable_bacs'] ) {
+		// When payment method selection is disabled, turn off both COD and BACS;
+		// when enabled, keep at least COD active if both are unchecked.
+		if ( 0 === $sanitized['show_payment_methods'] ) {
+			$sanitized['enable_cod']  = 0;
+			$sanitized['enable_bacs'] = 0;
+		} elseif ( 0 === $sanitized['enable_cod'] && 0 === $sanitized['enable_bacs'] ) {
 			$sanitized['enable_cod'] = 1;
 		}
 

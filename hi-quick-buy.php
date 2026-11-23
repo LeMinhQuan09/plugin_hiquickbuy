@@ -4,7 +4,7 @@
  * Plugin URI:        https://hiseo.vn
  * Update URI:        https://github.com/LeMinhQuan09/plugin_hiquickbuy
  * Description:       Thêm nút Mua nhanh và popup đặt hàng gọn nhẹ cho WooCommerce. Hỗ trợ sản phẩm biến thể, sản phẩm giá Liên hệ, chọn địa chỉ Việt Nam, tính phí giao hàng và chuyển khoản mã QR.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.9
  * Requires PHP:      8.1
  * Requires Plugins:  woocommerce
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'HIQB_VERSION', '1.0.0' );
+define( 'HIQB_VERSION', '1.0.1' );
 define( 'HIQB_PLUGIN_FILE', __FILE__ );
 define( 'HIQB_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'HIQB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

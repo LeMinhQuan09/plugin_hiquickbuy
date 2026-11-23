@@ -297,7 +297,7 @@ final class Admin_Settings {
 			<div class="hiqb-admin-header">
 				<div>
 					<div class="hiqb-admin-header__title-row">
-						<h1 class="hiqb-admin-header__title"><?php esc_html_e( 'HI Quick-Buy', 'hi-quick-buy' ); ?></h1>
+						<div class="hiqb-admin-header__title"><?php esc_html_e( 'HI Quick-Buy', 'hi-quick-buy' ); ?></div>
 						<span class="hiqb-admin-badge">v<?php echo esc_html( HIQB_VERSION ); ?></span>
 					</div>
 					<p class="hiqb-admin-header__subtitle">
@@ -309,6 +309,8 @@ final class Admin_Settings {
 					<code>[hi_quickbuy id="123"]</code>
 				</div>
 			</div>
+			<h1 class="screen-reader-text"><?php esc_html_e( 'Cài đặt HI Quick-Buy', 'hi-quick-buy' ); ?></h1>
+			<hr class="wp-header-end" />
 
 			<?php settings_errors(); ?>
 

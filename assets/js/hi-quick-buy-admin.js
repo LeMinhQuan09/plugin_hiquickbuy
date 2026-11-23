@@ -68,6 +68,45 @@
 				removeBtn.hidden = true;
 			});
 		});
+
+		// Sync master "show_payment_methods" toggle with COD & BACS sub-toggles.
+		const paymentMaster = document.querySelector(
+			'input[name="hiqb_settings[show_payment_methods]"]'
+		);
+		const codToggle = document.querySelector('input[name="hiqb_settings[enable_cod]"]');
+		const bacsToggle = document.querySelector('input[name="hiqb_settings[enable_bacs]"]');
+
+		if (paymentMaster && (codToggle || bacsToggle)) {
+			paymentMaster.addEventListener('change', () => {
+				if (!paymentMaster.checked) {
+					if (codToggle) {
+						codToggle.checked = false;
+					}
+					if (bacsToggle) {
+						bacsToggle.checked = false;
+					}
+				} else if (
+					(!codToggle || !codToggle.checked) &&
+					(!bacsToggle || !bacsToggle.checked)
+				) {
+					// Re-enable COD by default when turning payment selection back on.
+					if (codToggle) {
+						codToggle.checked = true;
+					}
+				}
+			});
+
+			[codToggle, bacsToggle].forEach((subToggle) => {
+				if (!subToggle) {
+					return;
+				}
+				subToggle.addEventListener('change', () => {
+					if (subToggle.checked && !paymentMaster.checked) {
+						paymentMaster.checked = true;
+					}
+				});
+			});
+		}
 	});
 })();
 

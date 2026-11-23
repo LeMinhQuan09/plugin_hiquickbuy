@@ -1,6 +1,6 @@
 # ⚡ HI Quick-Buy — Plugin Mua Hàng Nhanh cho WooCommerce
 
-![Version](https://img.shields.io/badge/version-1.0.0-d70018?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.1-d70018?style=flat-square)
 ![WordPress](https://img.shields.io/badge/WordPress-6.9%2B-21759b?style=flat-square&logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777bb4?style=flat-square&logo=php&logoColor=white)
 ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20(HPOS)-96588a?style=flat-square&logo=woocommerce&logoColor=white)

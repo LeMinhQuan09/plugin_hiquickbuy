@@ -425,11 +425,23 @@
 	padding: 0;
 }
 
-.hiqb-admin-footer .button-primary {
-	padding: 4px 20px;
+.wp-core-ui .hiqb-admin-footer .button-primary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 22px;
 	height: 38px;
+	min-height: 38px;
+	line-height: 1;
 	font-size: 14px;
 	font-weight: 600;
+	border-radius: 6px;
+}
+
+.hiqb-admin-wrap .notice,
+.hiqb-admin-wrap .updated,
+.hiqb-admin-wrap .error {
+	margin: 0 0 18px !important;
 	border-radius: 6px;
 }
 
