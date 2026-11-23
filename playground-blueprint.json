@@ -1,0 +1,70 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "preferredVersions": {
+    "php": "8.3",
+    "wp": "latest"
+  },
+  "landingPage": "/shop/",
+  "login": true,
+  "steps": [
+    {
+      "step": "defineWpConfigConsts",
+      "consts": {
+        "WP_DEBUG": true,
+        "WP_DEBUG_LOG": true,
+        "WP_DEBUG_DISPLAY": false
+      }
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "HI Quick-Buy Demo Store",
+        "permalink_structure": "/%postname%/",
+        "woocommerce_default_country": "VN:HN",
+        "woocommerce_currency": "VND",
+        "woocommerce_currency_pos": "right",
+        "woocommerce_price_num_decimals": "0",
+        "woocommerce_price_thousand_sep": ".",
+        "woocommerce_price_decimal_sep": ",",
+        "woocommerce_onboarding_profile": {
+          "skipped": true
+        },
+        "woocommerce_coming_soon": "no",
+        "woocommerce_cod_settings": {
+          "enabled": "yes",
+          "title": "Thanh toán khi nhận hàng (COD)"
+        },
+        "woocommerce_bacs_settings": {
+          "enabled": "yes",
+          "title": "Chuyển khoản ngân hàng (BACS)",
+          "instructions": "Vui lòng chuyển khoản đúng số tiền và nội dung đơn hàng để hệ thống xác nhận nhanh nhất."
+        },
+        "woocommerce_bacs_accounts": [
+          {
+            "account_name": "CONG TY HI QUICK BUY",
+            "account_number": "0123456789",
+            "bank_name": "Vietcombank",
+            "sort_code": "",
+            "iban": "",
+            "bic": ""
+          }
+        ]
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require_once '/wordpress/wp-load.php'; require_once '/wordpress/wp-admin/includes/plugin.php'; if ( class_exists( 'WC_Install' ) ) { WC_Install::create_pages(); } if ( file_exists( WP_PLUGIN_DIR . '/hiquickbuy/hi-quick-buy.php' ) && ! is_plugin_active( 'hiquickbuy/hi-quick-buy.php' ) ) { activate_plugin( 'hiquickbuy/hi-quick-buy.php' ); } if ( class_exists( 'WC_Shipping_Zone' ) ) { $zones = WC_Shipping_Zones::get_zones(); if ( empty( $zones ) ) { $zone = new WC_Shipping_Zone(); $zone->set_zone_name( 'Việt Nam' ); $zone->add_location( 'VN', 'country' ); $zone->save(); $instance_id = $zone->add_shipping_method( 'flat_rate' ); update_option( 'woocommerce_flat_rate_' . $instance_id . '_settings', array( 'title' => 'Giao hàng nhanh toàn quốc', 'tax_status' => 'none', 'cost' => '25000' ) ); } } if ( ! get_page_by_path( 'tai-nghe-bluetooth-hi-pro', OBJECT, 'product' ) ) { $simple = new WC_Product_Simple(); $simple->set_name( 'Tai nghe Bluetooth HI Pro' ); $simple->set_slug( 'tai-nghe-bluetooth-hi-pro' ); $simple->set_status( 'publish' ); $simple->set_catalog_visibility( 'visible' ); $simple->set_regular_price( '590000' ); $simple->set_sale_price( '490000' ); $simple->set_manage_stock( true ); $simple->set_stock_quantity( 20 ); $simple->set_short_description( 'Tai nghe chống ồn chủ động, pin 30 giờ, bảo hành 12 tháng.' ); $simple->save(); } if ( ! get_page_by_path( 'ao-thun-cotton-premium-hi', OBJECT, 'product' ) ) { $variable = new WC_Product_Variable(); $variable->set_name( 'Áo Thun Cotton Premium HI' ); $variable->set_slug( 'ao-thun-cotton-premium-hi' ); $variable->set_status( 'publish' ); $variable->set_catalog_visibility( 'visible' ); $variable->set_short_description( 'Chất liệu 100% Cotton thoáng mát, đủ màu và kích cỡ.' ); $attr_color = new WC_Product_Attribute(); $attr_color->set_name( 'Màu sắc' ); $attr_color->set_options( array( 'Đen', 'Trắng' ) ); $attr_color->set_visible( true ); $attr_color->set_variation( true ); $attr_size = new WC_Product_Attribute(); $attr_size->set_name( 'Kích thước' ); $attr_size->set_options( array( 'M', 'L' ) ); $attr_size->set_visible( true ); $attr_size->set_variation( true ); $variable->set_attributes( array( $attr_color, $attr_size ) ); $parent_id = $variable->save(); $combos = array( array( 'Đen', 'M', '250000' ), array( 'Đen', 'L', '260000' ), array( 'Trắng', 'M', '250000' ), array( 'Trắng', 'L', '260000' ) ); foreach ( $combos as $c ) { $var = new WC_Product_Variation(); $var->set_parent_id( $parent_id ); $var->set_attributes( array( 'mau-sac' => $c[0], 'kich-thuoc' => $c[1] ) ); $var->set_regular_price( $c[2] ); $var->set_manage_stock( true ); $var->set_stock_quantity( 15 ); $var->set_status( 'publish' ); $var->save(); } $variable->sync( $parent_id ); } if ( ! get_page_by_path( 'relay-bao-ve-dien-ap-mu350-415v-mikro', OBJECT, 'product' ) ) { $contact = new WC_Product_Simple(); $contact->set_name( 'Relay Bảo Vệ Điện Áp MU350-415V MIKRO' ); $contact->set_slug( 'relay-bao-ve-dien-ap-mu350-415v-mikro' ); $contact->set_status( 'publish' ); $contact->set_catalog_visibility( 'visible' ); $contact->set_short_description( 'Sản phẩm chưa có giá — nhấn Mua ngay để gửi yêu cầu báo giá / liên hệ.' ); $contact->save(); } if ( ! get_page_by_path( 'ban-phim-co-hi-key-pro', OBJECT, 'product' ) ) { $kb = new WC_Product_Variable(); $kb->set_name( 'Bàn Phím Cơ HI Key Pro' ); $kb->set_slug( 'ban-phim-co-hi-key-pro' ); $kb->set_status( 'publish' ); $kb->set_catalog_visibility( 'visible' ); $kb->set_short_description( 'Bàn phím cơ hotswap 3 mode kết nối. Hỗ trợ cả phiên bản có giá và phiên bản Custom báo giá.' ); $attr_sw = new WC_Product_Attribute(); $attr_sw->set_name( 'Switch' ); $attr_sw->set_options( array( 'Red Switch', 'Brown Switch' ) ); $attr_sw->set_visible( true ); $attr_sw->set_variation( true ); $attr_ver = new WC_Product_Attribute(); $attr_ver->set_name( 'Phiên bản' ); $attr_ver->set_options( array( 'Tiêu chuẩn', 'Custom' ) ); $attr_ver->set_visible( true ); $attr_ver->set_variation( true ); $kb->set_attributes( array( $attr_sw, $attr_ver ) ); $kb_id = $kb->save(); $kb_combos = array( array( 'Red Switch', 'Tiêu chuẩn', '1290000', 10 ), array( 'Brown Switch', 'Tiêu chuẩn', '1350000', 8 ), array( 'Red Switch', 'Custom', '', 5 ), array( 'Brown Switch', 'Custom', '', 5 ) ); foreach ( $kb_combos as $c ) { $v = new WC_Product_Variation(); $v->set_parent_id( $kb_id ); $v->set_attributes( array( 'switch' => $c[0], 'phien-ban' => $c[1] ) ); if ( '' !== $c[2] ) { $v->set_regular_price( $c[2] ); } $v->set_manage_stock( true ); $v->set_stock_quantity( $c[3] ); $v->set_status( 'publish' ); $v->save(); } $kb->sync( $kb_id ); } flush_rewrite_rules(); echo 'SEED_OK';"
+    }
+  ]
+}
+

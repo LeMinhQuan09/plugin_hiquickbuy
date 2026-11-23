@@ -1,0 +1,461 @@
+/**
+ * HI Quick-Buy Admin Settings UI
+ *
+ * @package HIQuickBuy
+ */
+
+:root {
+	--hiqb-admin-primary: #d70018;
+}
+
+.hiqb-admin-wrap {
+	max-width: 960px;
+	margin: 20px 20px 32px 0;
+}
+
+/* Header Banner */
+.hiqb-admin-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 22px 26px;
+	background: linear-gradient(135deg, #ffffff 0%, color-mix(in srgb, var(--hiqb-admin-primary) 5%, #ffffff) 100%);
+	border: 1px solid #dcdcde;
+	border-left: 5px solid var(--hiqb-admin-primary);
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	margin-bottom: 22px;
+}
+
+.hiqb-admin-header__title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 4px;
+}
+
+.wrap .hiqb-admin-header__title {
+	margin: 0 !important;
+	padding: 0 !important;
+	font-size: 24px !important;
+	font-weight: 800 !important;
+	color: #111827;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+}
+
+.hiqb-admin-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 9px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--hiqb-admin-primary) 12%, #ffffff);
+	color: var(--hiqb-admin-primary);
+	font-size: 11.5px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.hiqb-admin-header__subtitle {
+	margin: 0;
+	color: #4b5563;
+	font-size: 13.5px;
+	font-weight: 500;
+}
+
+.hiqb-admin-shortcode {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	background: #ffffff;
+	border: 1px dashed #c3c4c7;
+	border-radius: 8px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+.hiqb-admin-shortcode code {
+	background: #f3f4f6;
+	padding: 4px 8px;
+	border-radius: 5px;
+	border: 1px solid #e5e7eb;
+	color: #111827;
+	font-weight: 700;
+	font-size: 12.5px;
+}
+
+/* Section Cards */
+.hiqb-admin-card {
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+	margin-bottom: 18px;
+	overflow: hidden;
+}
+
+.hiqb-admin-card__head {
+	padding: 14px 22px;
+	background: #f9fafb;
+	border-bottom: 1px solid #ececec;
+}
+
+.hiqb-admin-card__title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 700;
+	color: #1d2327;
+}
+
+.hiqb-admin-card__desc {
+	margin: 5px 0 0;
+	font-size: 13px;
+	color: #646970;
+}
+
+.hiqb-admin-card__body {
+	padding: 4px 22px 10px;
+}
+
+.hiqb-admin-card .form-table {
+	margin: 0;
+}
+
+.hiqb-admin-card .form-table tr {
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.hiqb-admin-card .form-table tr:last-child {
+	border-bottom: none;
+}
+
+.hiqb-admin-card .form-table th {
+	width: 260px;
+	padding: 16px 16px 16px 0;
+	font-size: 13.5px;
+	font-weight: 600;
+	color: #1d2327;
+	vertical-align: middle;
+}
+
+.hiqb-admin-card .form-table td {
+	padding: 14px 0;
+	vertical-align: middle;
+}
+
+/* Toggle Switch */
+.hiqb-switch-wrap {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.hiqb-switch {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 22px;
+	flex-shrink: 0;
+}
+
+.hiqb-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+
+.hiqb-switch__slider {
+	position: absolute;
+	inset: 0;
+	background: #c3c4c7;
+	border-radius: 999px;
+	transition: background-color 0.2s ease;
+}
+
+.hiqb-switch__slider::before {
+	content: "";
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	left: 3px;
+	top: 3px;
+	background: #ffffff;
+	border-radius: 50%;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	transition: transform 0.2s ease;
+}
+
+.hiqb-switch input:checked + .hiqb-switch__slider {
+	background: #2271b1;
+}
+
+.hiqb-switch input:checked + .hiqb-switch__slider::before {
+	transform: translateX(18px);
+}
+
+.hiqb-switch input:focus-visible + .hiqb-switch__slider {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.hiqb-switch__text {
+	font-size: 13.5px;
+	color: #50575e;
+	line-height: 1.45;
+}
+
+.hiqb-admin-hint-wrap {
+	margin-top: 8px;
+}
+
+.hiqb-admin-hint {
+	display: inline-block;
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-size: 12.5px;
+	line-height: 1.45;
+}
+
+.hiqb-admin-hint a {
+	font-weight: 600;
+	text-decoration: underline;
+}
+
+.hiqb-admin-hint--warn {
+	background: #fff8e5;
+	border: 1px solid #f0c36d;
+	color: #7c5200;
+}
+
+.hiqb-admin-hint--warn a {
+	color: #7c5200;
+}
+
+.hiqb-admin-hint--ok {
+	background: #edfaef;
+	border: 1px solid #9fd8ab;
+	color: #166534;
+}
+
+.hiqb-admin-hint--ok a {
+	color: #166534;
+}
+
+/* Inputs, Selects, Color Picker */
+.hiqb-admin-card input[type="text"],
+.hiqb-admin-card input[type="number"],
+.hiqb-admin-card textarea {
+	border-color: #c3c4c7;
+	border-radius: 6px;
+	padding: 6px 12px;
+	font-size: 13.5px;
+	line-height: 1.45;
+}
+
+.hiqb-admin-card input[type="text"],
+.hiqb-admin-card input[type="number"] {
+	min-height: 38px;
+}
+
+.wp-core-ui .hiqb-admin-card select {
+	min-width: 280px;
+	max-width: 100%;
+	height: 38px;
+	min-height: 38px;
+	line-height: 1.4;
+	padding: 0 36px 0 12px;
+	border: 1px solid #c3c4c7;
+	border-radius: 6px;
+	font-size: 13.5px;
+	color: #1d2327;
+	background-color: #ffffff;
+	background-position: right 10px center;
+	box-sizing: border-box;
+	vertical-align: middle;
+}
+
+.wp-core-ui .hiqb-admin-card select:focus,
+.hiqb-admin-card input[type="text"]:focus,
+.hiqb-admin-card input[type="number"]:focus,
+.hiqb-admin-card textarea:focus {
+	border-color: var(--hiqb-admin-primary);
+	box-shadow: 0 0 0 1px var(--hiqb-admin-primary);
+	outline: none;
+}
+
+.hiqb-admin-card .description {
+	margin: 6px 0 0;
+	font-size: 12.5px;
+	color: #646970;
+}
+
+.hiqb-color-field {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 4px 10px 4px 5px;
+	background: #f9fafb;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+}
+
+.hiqb-color-field input[type="color"] {
+	width: 38px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	cursor: pointer;
+}
+
+.hiqb-color-field code {
+	background: transparent;
+	padding: 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+/* Media Uploader Field (QR Image) */
+.hiqb-media-field {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.hiqb-media-preview {
+	padding: 6px;
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.hiqb-media-preview[hidden],
+.hiqb-media-actions [hidden] {
+	display: none !important;
+}
+
+.hiqb-media-preview img {
+	display: block;
+	width: 140px;
+	height: auto;
+	border-radius: 4px;
+}
+
+.hiqb-media-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/* Placeholder Variables Legend */
+.hiqb-var-legend {
+	margin-top: 8px;
+	padding: 10px 12px;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	font-size: 12.5px;
+	color: #4b5563;
+	line-height: 1.5;
+	max-width: 600px;
+}
+
+.hiqb-var-legend__title {
+	font-weight: 600;
+	color: #1f2937;
+	margin-bottom: 5px;
+}
+
+.hiqb-var-legend__list {
+	margin: 0;
+	padding-left: 16px;
+	list-style: disc;
+}
+
+.hiqb-var-legend__list li {
+	margin-bottom: 3px;
+}
+
+.hiqb-var-legend__list li:last-child {
+	margin-bottom: 0;
+}
+
+.hiqb-var-legend code {
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 1px 5px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.hiqb-var-legend__example {
+	margin-top: 6px;
+	padding-top: 6px;
+	border-top: 1px dashed #e5e7eb;
+	color: #374151;
+}
+
+/* Sticky Save Bar */
+.hiqb-admin-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 22px;
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.hiqb-admin-footer .submit {
+	margin: 0;
+	padding: 0;
+}
+
+.hiqb-admin-footer .button-primary {
+	padding: 4px 20px;
+	height: 38px;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 6px;
+}
+
+.hiqb-admin-footer__note {
+	font-size: 12.5px;
+	color: #646970;
+}
+
+@media (max-width: 782px) {
+	.hiqb-admin-wrap {
+		margin-right: 12px;
+	}
+
+	.hiqb-admin-card .form-table th {
+		width: auto;
+		padding: 12px 0 4px;
+	}
+
+	.hiqb-admin-card .form-table td {
+		padding: 4px 0 12px;
+	}
+
+	.hiqb-admin-footer {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+}
+
