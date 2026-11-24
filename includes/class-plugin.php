@@ -67,6 +67,8 @@ final class Plugin {
 			return;
 		}
 
+		add_action( 'init', array( Activator::class, 'maybe_upgrade' ), 5 );
+
 		// Admin-only module stays strictly behind is_admin().
 		if ( is_admin() ) {
 			$admin_settings = new Admin_Settings();
@@ -110,9 +112,24 @@ final class Plugin {
 		$popup_form->register();
 		$order_handler->register();
 
+		if ( Settings::get( 'enabled' ) ) {
+			add_action( 'wp_ajax_hiqb_refresh_nonce', array( $this, 'ajax_refresh_nonce' ) );
+			add_action( 'wp_ajax_nopriv_hiqb_refresh_nonce', array( $this, 'ajax_refresh_nonce' ) );
+		}
+
 		if ( ! is_admin() ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
 		}
+	}
+
+	/**
+	 * AJAX handler: hand out a fresh nonce when the one embedded in a cached page has expired.
+	 *
+	 * The nonce only protects against CSRF; it is not a secret, so issuing it publicly is safe.
+	 */
+	public function ajax_refresh_nonce(): void {
+		nocache_headers();
+		wp_send_json_success( array( 'nonce' => wp_create_nonce( 'hiqb_ajax_nonce' ) ) );
 	}
 
 	/**
@@ -138,10 +155,63 @@ final class Plugin {
 	}
 
 	/**
-	 * Enqueue Vanilla JS & CSS assets on the frontend.
+	 * Register frontend assets and enqueue them early only on pages that are known to need them.
+	 *
+	 * Any other page gets the assets on demand, when a Quick Buy button is actually rendered
+	 * (see request_frontend_assets()), so nothing is loaded site-wide.
 	 */
 	public function enqueue_frontend_assets(): void {
 		if ( ! Settings::get( 'enabled' ) ) {
+			return;
+		}
+
+		$this->register_frontend_assets();
+
+		if ( $this->should_enqueue_frontend_assets() ) {
+			wp_enqueue_style( 'hiqb-frontend' );
+			wp_enqueue_script( 'hiqb-frontend' );
+		}
+	}
+
+	/**
+	 * Enqueue frontend assets because a Quick Buy button is being rendered on the current page.
+	 */
+	public function request_frontend_assets(): void {
+		if ( is_admin() || wp_doing_ajax() || ! Settings::get( 'enabled' ) ) {
+			return;
+		}
+
+		$this->register_frontend_assets();
+		wp_enqueue_style( 'hiqb-frontend' );
+		wp_enqueue_script( 'hiqb-frontend' );
+	}
+
+	/**
+	 * Whether the current request is a page where Quick Buy buttons are expected.
+	 */
+	private function should_enqueue_frontend_assets(): bool {
+		$needed = function_exists( 'is_woocommerce' ) && is_woocommerce();
+
+		if ( ! $needed && is_singular() ) {
+			$post   = get_post();
+			$needed = $post instanceof \WP_Post && has_shortcode( (string) $post->post_content, 'hi_quickbuy' );
+		}
+
+		/**
+		 * Filter whether Quick Buy assets are enqueued in the page head for the current request.
+		 *
+		 * Return true to force loading (e.g. buttons injected by a page builder or cached fragments).
+		 *
+		 * @param bool $needed Whether assets are enqueued early.
+		 */
+		return (bool) apply_filters( 'hiqb_enqueue_frontend_assets', $needed );
+	}
+
+	/**
+	 * Register Vanilla JS & CSS assets for the frontend (idempotent).
+	 */
+	private function register_frontend_assets(): void {
+		if ( wp_script_is( 'hiqb-frontend', 'registered' ) ) {
 			return;
 		}
 
@@ -150,7 +220,7 @@ final class Plugin {
 		$css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : HIQB_VERSION;
 		$js_ver   = file_exists( $js_file ) ? (string) filemtime( $js_file ) : HIQB_VERSION;
 
-		wp_enqueue_style(
+		wp_register_style(
 			'hiqb-frontend',
 			HIQB_PLUGIN_URL . 'assets/css/hi-quick-buy.css',
 			array(),
@@ -165,7 +235,7 @@ final class Plugin {
 			);
 		}
 
-		wp_enqueue_script(
+		wp_register_script(
 			'hiqb-frontend',
 			HIQB_PLUGIN_URL . 'assets/js/hi-quick-buy.js',
 			array(), // Zero jQuery dependency.
@@ -212,6 +282,18 @@ final class Plugin {
 					'orderNumberLabel'  => __( 'Mã đơn hàng:', 'hi-quick-buy' ),
 					'viewOrderDetail'   => __( 'Xem chi tiết đơn hàng', 'hi-quick-buy' ),
 					'continueShopping'  => __( 'Tiếp tục mua sắm', 'hi-quick-buy' ),
+					'searchPlaceholder' => __( 'Tìm kiếm...', 'hi-quick-buy' ),
+					'noResults'         => __( 'Không tìm thấy kết quả', 'hi-quick-buy' ),
+					'qrAlt'             => __( 'Mã QR chuyển khoản', 'hi-quick-buy' ),
+					'qrCaption'         => __( 'Quét mã QR để chuyển khoản', 'hi-quick-buy' ),
+					'bankName'          => __( 'Ngân hàng:', 'hi-quick-buy' ),
+					'accountName'       => __( 'Chủ tài khoản:', 'hi-quick-buy' ),
+					'accountNumber'     => __( 'Số tài khoản:', 'hi-quick-buy' ),
+					'transferAmount'    => __( 'Số tiền:', 'hi-quick-buy' ),
+					'transferRef'       => __( 'Nội dung CK:', 'hi-quick-buy' ),
+					'bacsTitle'         => __( 'Thông tin chuyển khoản ngân hàng', 'hi-quick-buy' ),
+					'copy'              => __( 'Sao chép', 'hi-quick-buy' ),
+					'copied'            => __( 'Đã chép', 'hi-quick-buy' ),
 				),
 			)
 		);

@@ -61,14 +61,43 @@
 	}
 
 	/**
+	 * Fetch a fresh nonce (the one in a full-page-cached HTML may be expired).
+	 *
+	 * @param {AbortSignal} [signal]
+	 * @returns {Promise<boolean>}
+	 */
+	async function refreshNonce(signal) {
+		try {
+			const body = new FormData();
+			body.set('action', 'hiqb_refresh_nonce');
+			const response = await fetch(config.ajaxUrl, {
+				method: 'POST',
+				credentials: 'same-origin',
+				cache: 'no-store',
+				body,
+				signal,
+			});
+			const json = await response.json();
+			if (json && json.success && json.data && json.data.nonce) {
+				config.nonce = String(json.data.nonce);
+				return true;
+			}
+		} catch (e) {
+			// Fall through: the caller reports the original error.
+		}
+		return false;
+	}
+
+	/**
 	 * Send a POST request via Fetch API to WordPress admin-ajax.php with nonce.
 	 *
 	 * @param {string} action
 	 * @param {Record<string, string|number>|FormData} payload
 	 * @param {AbortSignal} [signal]
+	 * @param {boolean} [isRetry] Internal: set on the single retry after a nonce refresh.
 	 * @returns {Promise<any>}
 	 */
-	async function postAjax(action, payload, signal) {
+	async function postAjax(action, payload, signal, isRetry) {
 		let body;
 		if (payload instanceof FormData) {
 			body = payload;
@@ -89,13 +118,26 @@
 			signal,
 		});
 
-		const json = await response.json();
+		let json = null;
+		try {
+			json = await response.json();
+		} catch (e) {
+			json = null;
+		}
+
+		// WordPress answers "-1" when the nonce is invalid/expired: refresh it once and retry.
+		if (json === -1 && !isRetry && (await refreshNonce(signal))) {
+			return postAjax(action, body, signal, true);
+		}
+
 		if (!response.ok || !json || !json.success) {
 			const msg =
 				(json && json.data && json.data.message) ||
 				i18n.genericError ||
 				'Request failed.';
-			throw new Error(msg);
+			const error = new Error(msg);
+			error.code = (json && json.data && json.data.code) || '';
+			throw error;
 		}
 
 		return json.data;
@@ -270,7 +312,7 @@
 		searchInput.type = 'search';
 		searchInput.className = 'hiqb-combobox__search';
 		searchInput.placeholder =
-			selectEl.getAttribute('data-search-placeholder') || 'Tìm kiếm...';
+			selectEl.getAttribute('data-search-placeholder') || i18n.searchPlaceholder || 'Tìm kiếm...';
 		searchInput.setAttribute('autocomplete', 'off');
 		searchWrap.appendChild(searchInput);
 
@@ -319,7 +361,7 @@
 			if (!filtered.length) {
 				const emptyLi = document.createElement('li');
 				emptyLi.className = 'hiqb-combobox__empty';
-				emptyLi.textContent = 'Không tìm thấy kết quả';
+				emptyLi.textContent = i18n.noResults || 'Không tìm thấy kết quả';
 				listEl.appendChild(emptyLi);
 				return;
 			}
@@ -446,15 +488,14 @@
 	}
 
 	/**
-	 * Escape text safely for HTML insertion.
+	 * Escape text safely for HTML insertion, in both text and quoted attribute contexts.
 	 *
 	 * @param {string} str
 	 * @returns {string}
 	 */
 	function escapeHtml(str) {
-		const div = document.createElement('div');
-		div.textContent = String(str || '');
-		return div.innerHTML;
+		const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+		return String(str === null || str === undefined ? '' : str).replace(/[&<>"']/g, (ch) => map[ch]);
 	}
 
 	/**
@@ -776,11 +817,10 @@
 					return;
 				}
 
+				const choiceStillOffered = rates.some((rate) => rate.id === currentChoice);
 				const html = rates
 					.map((rate, idx) => {
-						const checked =
-							(currentChoice && rate.id === currentChoice) ||
-							(!currentChoice && idx === 0);
+						const checked = choiceStillOffered ? rate.id === currentChoice : idx === 0;
 						return (
 							'<label class="hiqb-option-card">' +
 							'<input type="radio" name="shipping_method" value="' +
@@ -939,6 +979,9 @@
 				if (alertBox) {
 					alertBox.textContent = err.message || i18n.genericError || 'Có lỗi xảy ra.';
 					alertBox.hidden = false;
+				}
+				if (err.code === 'shipping_changed') {
+					recalculateShipping();
 				}
 				if (submitBtn) {
 					submitBtn.disabled = false;
@@ -1134,13 +1177,18 @@
 			const qrUrl = data.bacs_info.qr_url ? String(data.bacs_info.qr_url) : '';
 			const transferRef = data.bacs_info.transfer_ref ? String(data.bacs_info.transfer_ref) : '';
 			const accounts = Array.isArray(data.bacs_info.accounts) ? data.bacs_info.accounts : [];
+			const copyLabel = escapeHtml(i18n.copy || 'Sao chép');
 
 			const qrBlock = qrUrl
 				? '<div class="hiqb-bacs-qr">' +
 				  '<img src="' +
 				  escapeHtml(qrUrl) +
-				  '" alt="Mã QR chuyển khoản" loading="lazy">' +
-				  '<span>Quét mã QR để chuyển khoản</span>' +
+				  '" alt="' +
+				  escapeHtml(i18n.qrAlt || 'Mã QR chuyển khoản') +
+				  '" loading="lazy">' +
+				  '<span>' +
+				  escapeHtml(i18n.qrCaption || 'Quét mã QR để chuyển khoản') +
+				  '</span>' +
 				  '</div>'
 				: '';
 
@@ -1148,21 +1196,29 @@
 				.map((acc) => {
 					return (
 						(acc.bank_name
-							? '<div class="hiqb-bacs-row"><span>Ngân hàng:</span><strong>' +
+							? '<div class="hiqb-bacs-row"><span>' +
+							  escapeHtml(i18n.bankName || 'Ngân hàng:') +
+							  '</span><strong>' +
 							  escapeHtml(acc.bank_name) +
 							  '</strong></div>'
 							: '') +
 						(acc.account_name
-							? '<div class="hiqb-bacs-row"><span>Chủ tài khoản:</span><strong>' +
+							? '<div class="hiqb-bacs-row"><span>' +
+							  escapeHtml(i18n.accountName || 'Chủ tài khoản:') +
+							  '</span><strong>' +
 							  escapeHtml(acc.account_name) +
 							  '</strong></div>'
 							: '') +
 						(acc.account_number
-							? '<div class="hiqb-bacs-row"><span>Số tài khoản:</span><span class="hiqb-bacs-copy-val"><strong>' +
+							? '<div class="hiqb-bacs-row"><span>' +
+							  escapeHtml(i18n.accountNumber || 'Số tài khoản:') +
+							  '</span><span class="hiqb-bacs-copy-val"><strong>' +
 							  escapeHtml(acc.account_number) +
 							  '</strong><button type="button" class="hiqb-copy-btn" data-hiqb-copy="' +
 							  escapeHtml(acc.account_number) +
-							  '">Sao chép</button></span></div>'
+							  '">' +
+							  copyLabel +
+							  '</button></span></div>'
 							: '')
 					);
 				})
@@ -1170,21 +1226,29 @@
 
 			const summaryRows =
 				(totalFormatted
-					? '<div class="hiqb-bacs-row"><span>Số tiền:</span><strong class="hiqb-bacs-amount">' +
+					? '<div class="hiqb-bacs-row"><span>' +
+					  escapeHtml(i18n.transferAmount || 'Số tiền:') +
+					  '</span><strong class="hiqb-bacs-amount">' +
 					  totalFormatted +
 					  '</strong></div>'
 					: '') +
 				(transferRef
-					? '<div class="hiqb-bacs-row"><span>Nội dung CK:</span><span class="hiqb-bacs-copy-val"><strong>' +
+					? '<div class="hiqb-bacs-row"><span>' +
+					  escapeHtml(i18n.transferRef || 'Nội dung CK:') +
+					  '</span><span class="hiqb-bacs-copy-val"><strong>' +
 					  escapeHtml(transferRef) +
 					  '</strong><button type="button" class="hiqb-copy-btn" data-hiqb-copy="' +
 					  escapeHtml(transferRef) +
-					  '">Sao chép</button></span></div>'
+					  '">' +
+							  copyLabel +
+							  '</button></span></div>'
 					: '');
 
 			bacsHtml =
 				'<div class="hiqb-bacs-box">' +
-				'<div class="hiqb-bacs-box__title">Thông tin chuyển khoản ngân hàng</div>' +
+				'<div class="hiqb-bacs-box__title">' +
+				escapeHtml(i18n.bacsTitle || 'Thông tin chuyển khoản ngân hàng') +
+				'</div>' +
 				(data.bacs_info.instructions
 					? '<p class="hiqb-bacs-box__desc">' + escapeHtml(data.bacs_info.instructions) + '</p>'
 					: '') +
@@ -1236,7 +1300,7 @@
 				try {
 					await navigator.clipboard.writeText(text);
 					const orig = btn.textContent;
-					btn.textContent = 'Đã chép';
+					btn.textContent = i18n.copied || 'Đã chép';
 					btn.classList.add('hiqb-copy-btn--copied');
 					window.setTimeout(() => {
 						btn.textContent = orig;

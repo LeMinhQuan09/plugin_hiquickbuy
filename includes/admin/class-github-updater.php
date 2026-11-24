@@ -172,17 +172,21 @@ final class GitHub_Updater {
 	 * @return array<string, mixed>
 	 */
 	public function inject_auth_headers( array $args, string $url ): array {
-		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
-		$path = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+		$host   = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$path   = (string) wp_parse_url( $url, PHP_URL_PATH );
 
-		if ( 'api.github.com' !== $host && 'github.com' !== $host ) {
+		// Never send the token over plain HTTP or to any other host.
+		if ( 'https' !== $scheme || ( 'api.github.com' !== $host && 'github.com' !== $host ) ) {
 			return $args;
 		}
 
 		$repo_lower = strtolower( $this->repo );
 		$path_lower = strtolower( $path );
 
-		if ( ! str_contains( $path_lower, '/' . $repo_lower . '/' ) ) {
+		// The path must start with our repository, not merely contain its name somewhere.
+		$repo_prefix = 'api.github.com' === $host ? '/repos/' . $repo_lower . '/' : '/' . $repo_lower . '/';
+		if ( ! str_starts_with( $path_lower, $repo_prefix ) ) {
 			return $args;
 		}
 

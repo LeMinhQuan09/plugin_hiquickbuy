@@ -34,6 +34,10 @@ final class Locations {
 	 * Register AJAX endpoint for loading wards by province.
 	 */
 	public function register(): void {
+		if ( ! Settings::get( 'enabled' ) || ! Settings::get( 'show_vn_locations' ) ) {
+			return;
+		}
+
 		add_action( 'wp_ajax_hiqb_get_wards', array( $this, 'ajax_get_wards' ) );
 		add_action( 'wp_ajax_nopriv_hiqb_get_wards', array( $this, 'ajax_get_wards' ) );
 	}

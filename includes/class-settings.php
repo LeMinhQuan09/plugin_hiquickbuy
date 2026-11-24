@@ -115,6 +115,7 @@ final class Settings {
 	 * @return array<string, mixed>
 	 */
 	public static function sanitize( mixed $raw_input ): array {
+		// Values arrive already unslashed from options.php / update_option(), so no wp_unslash() here.
 		$input    = is_array( $raw_input ) ? $raw_input : array();
 		$defaults = self::get_defaults();
 
@@ -149,7 +150,7 @@ final class Settings {
 		}
 
 		$sanitized['button_title'] = isset( $input['button_title'] )
-			? sanitize_text_field( wp_unslash( (string) $input['button_title'] ) )
+			? sanitize_text_field( (string) $input['button_title'] )
 			: (string) $defaults['button_title'];
 
 		if ( '' === $sanitized['button_title'] ) {
@@ -157,11 +158,11 @@ final class Settings {
 		}
 
 		$sanitized['button_subtitle'] = isset( $input['button_subtitle'] )
-			? sanitize_text_field( wp_unslash( (string) $input['button_subtitle'] ) )
+			? sanitize_text_field( (string) $input['button_subtitle'] )
 			: '';
 
 		$sanitized['no_price_label'] = isset( $input['no_price_label'] )
-			? sanitize_text_field( wp_unslash( (string) $input['no_price_label'] ) )
+			? sanitize_text_field( (string) $input['no_price_label'] )
 			: (string) $defaults['no_price_label'];
 
 		if ( '' === $sanitized['no_price_label'] ) {
@@ -169,7 +170,7 @@ final class Settings {
 		}
 
 		$raw_color                 = isset( $input['primary_color'] )
-			? sanitize_hex_color( wp_unslash( (string) $input['primary_color'] ) )
+			? sanitize_hex_color( (string) $input['primary_color'] )
 			: '';
 		$sanitized['primary_color'] = is_string( $raw_color ) && '' !== $raw_color
 			? $raw_color
@@ -177,19 +178,18 @@ final class Settings {
 
 		$allowed_email_modes = array( 'disabled', 'optional', 'required' );
 		$email_mode          = isset( $input['email_field_mode'] )
-			? sanitize_key( wp_unslash( (string) $input['email_field_mode'] ) )
+			? sanitize_key( (string) $input['email_field_mode'] )
 			: (string) $defaults['email_field_mode'];
 
 		$sanitized['email_field_mode'] = in_array( $email_mode, $allowed_email_modes, true )
 			? $email_mode
 			: 'optional';
 
-		$sanitized['bacs_qr_image_id'] = isset( $input['bacs_qr_image_id'] )
-			? absint( $input['bacs_qr_image_id'] )
-			: 0;
+		$qr_image_id                   = isset( $input['bacs_qr_image_id'] ) ? absint( $input['bacs_qr_image_id'] ) : 0;
+		$sanitized['bacs_qr_image_id'] = ( $qr_image_id > 0 && wp_attachment_is_image( $qr_image_id ) ) ? $qr_image_id : 0;
 
 		$sanitized['bacs_transfer_template'] = isset( $input['bacs_transfer_template'] )
-			? sanitize_text_field( wp_unslash( (string) $input['bacs_transfer_template'] ) )
+			? sanitize_text_field( (string) $input['bacs_transfer_template'] )
 			: (string) $defaults['bacs_transfer_template'];
 
 		if ( '' === $sanitized['bacs_transfer_template'] ) {
@@ -197,11 +197,11 @@ final class Settings {
 		}
 
 		$sanitized['fallback_shipping_fee'] = isset( $input['fallback_shipping_fee'] )
-			? max( 0.0, (float) wc_format_decimal( wp_unslash( (string) $input['fallback_shipping_fee'] ) ) )
+			? max( 0.0, (float) wc_format_decimal( (string) $input['fallback_shipping_fee'] ) )
 			: (float) $defaults['fallback_shipping_fee'];
 
 		$sanitized['fallback_shipping_label'] = isset( $input['fallback_shipping_label'] )
-			? sanitize_text_field( wp_unslash( (string) $input['fallback_shipping_label'] ) )
+			? sanitize_text_field( (string) $input['fallback_shipping_label'] )
 			: (string) $defaults['fallback_shipping_label'];
 
 		if ( '' === $sanitized['fallback_shipping_label'] ) {
@@ -210,18 +210,18 @@ final class Settings {
 
 		$allowed_actions               = array( 'popup', 'redirect' );
 		$after_action                  = isset( $input['after_order_action'] )
-			? sanitize_key( wp_unslash( (string) $input['after_order_action'] ) )
+			? sanitize_key( (string) $input['after_order_action'] )
 			: 'popup';
 		$sanitized['after_order_action'] = in_array( $after_action, $allowed_actions, true )
 			? $after_action
 			: 'popup';
 
 		$sanitized['success_message'] = isset( $input['success_message'] )
-			? wp_kses_post( wp_unslash( (string) $input['success_message'] ) )
+			? wp_kses_post( (string) $input['success_message'] )
 			: (string) $defaults['success_message'];
 
 		$sanitized['error_message'] = isset( $input['error_message'] )
-			? sanitize_textarea_field( wp_unslash( (string) $input['error_message'] ) )
+			? sanitize_textarea_field( (string) $input['error_message'] )
 			: (string) $defaults['error_message'];
 
 		self::flush_cache();

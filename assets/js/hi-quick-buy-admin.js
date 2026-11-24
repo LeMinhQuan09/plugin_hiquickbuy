@@ -7,6 +7,8 @@
 (function () {
 	'use strict';
 
+	const adminI18n = (window.hiqbAdminConfig && window.hiqbAdminConfig.i18n) || {};
+
 	document.addEventListener('DOMContentLoaded', () => {
 		document.querySelectorAll('[data-hiqb-media-field]').forEach((field) => {
 			const input = field.querySelector('[data-hiqb-media-input]');
@@ -29,8 +31,8 @@
 
 				if (!frame) {
 					frame = window.wp.media({
-						title: 'Chọn ảnh mã QR chuyển khoản',
-						button: { text: 'Sử dụng ảnh này' },
+						title: adminI18n.mediaTitle || 'Chọn ảnh mã QR chuyển khoản',
+						button: { text: adminI18n.mediaButton || 'Sử dụng ảnh này' },
 						library: { type: 'image' },
 						multiple: false,
 					});
@@ -49,7 +51,7 @@
 						if (url) {
 							const img = document.createElement('img');
 							img.src = url;
-							img.alt = attachment.alt || 'Mã QR chuyển khoản';
+							img.alt = attachment.alt || adminI18n.qrAlt || 'Mã QR chuyển khoản';
 							preview.appendChild(img);
 							preview.hidden = false;
 							removeBtn.hidden = false;

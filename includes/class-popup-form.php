@@ -56,6 +56,10 @@ final class Popup_Form {
 	 * Print lightweight, accessible modal container in footer (form HTML is lazy-loaded).
 	 */
 	public function render_modal_shell(): void {
+		// The modal is only useful where the frontend script (and therefore a button) is present.
+		if ( ! wp_script_is( 'hiqb-frontend', 'enqueued' ) ) {
+			return;
+		}
 		?>
 		<div id="hiqb-modal" class="hiqb-modal" role="dialog" aria-modal="true" aria-labelledby="hiqb-modal-title" hidden>
 			<div class="hiqb-modal__backdrop" data-hiqb-close></div>
@@ -77,7 +81,7 @@ final class Popup_Form {
 
 		$product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
 		$variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
-		$quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+		$quantity     = isset( $_POST['quantity'] ) ? min( 9999, max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) ) : 1;
 
 		$product = wc_get_product( $product_id );
 		$allow_contact = $product instanceof WC_Product
@@ -85,7 +89,11 @@ final class Popup_Form {
 			&& (bool) Settings::get( 'allow_no_price' )
 			&& ! $product->is_type( array( 'external', 'grouped' ) );
 
-		if ( ! $product instanceof WC_Product || ( ! $product->is_purchasable() && ! $allow_contact ) ) {
+		if (
+			! $product instanceof WC_Product
+			|| ! Trigger::is_publicly_available( $product )
+			|| ( ! $product->is_purchasable() && ! $allow_contact )
+		) {
 			wp_send_json_error(
 				array( 'message' => __( 'Sản phẩm không tồn tại hoặc không thể đặt mua.', 'hi-quick-buy' ) ),
 				404
@@ -131,18 +139,20 @@ final class Popup_Form {
 		if ( $is_variable ) {
 			$variation_attrs = $product->get_variation_attributes();
 			$allow_no_price  = ! empty( $settings['allow_no_price'] );
-			$child_ids       = $product->get_children();
+			$child_ids       = array_map( 'absint', $product->get_children() );
+
+			// Prime post, meta and term caches in bulk to avoid one query set per variation (N+1).
+			if ( ! empty( $child_ids ) ) {
+				_prime_post_caches( $child_ids, true, true );
+			}
 
 			foreach ( $child_ids as $var_id ) {
 				$var_obj = wc_get_product( absint( $var_id ) );
-				if ( ! $var_obj instanceof WC_Product || 'publish' !== $var_obj->get_status() ) {
+				if ( ! $var_obj instanceof WC_Product || ! Trigger::is_variation_orderable( $var_obj, $product ) ) {
 					continue;
 				}
 
 				$var_has_price = ( '' !== $var_obj->get_price() );
-				if ( ! $var_obj->is_purchasable() && ! ( $allow_no_price && ! $var_has_price ) ) {
-					continue;
-				}
 
 				$var_price   = $var_has_price ? (float) wc_get_price_to_display( $var_obj ) : 0.0;
 				$var_img_id  = $var_obj->get_image_id();
@@ -173,7 +183,7 @@ final class Popup_Form {
 
 			if ( $variation_id > 0 ) {
 				$maybe_var = wc_get_product( $variation_id );
-				if ( $maybe_var instanceof WC_Product && $maybe_var->get_parent_id() === $product->get_id() ) {
+				if ( $maybe_var instanceof WC_Product && Trigger::is_variation_orderable( $maybe_var, $product ) ) {
 					$active_product  = $maybe_var;
 					$selected_var_id = $variation_id;
 				}
@@ -237,6 +247,7 @@ final class Popup_Form {
 
 			<form id="hiqb-order-form" class="hiqb-form" novalidate>
 				<input type="hidden" name="product_id" value="<?php echo esc_attr( (string) $product->get_id() ); ?>">
+				<?php echo Spam_Guard::render_fields(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped inside Spam_Guard::render_fields(). ?>
 				<input type="hidden" name="variation_id" value="<?php echo esc_attr( (string) $selected_var_id ); ?>">
 
 				<div class="hiqb-layout">
@@ -269,6 +280,14 @@ final class Popup_Form {
 									<?php
 									$attr_key   = 'attribute_' . sanitize_title( (string) $attribute_name );
 									$attr_label = wc_attribute_label( (string) $attribute_name );
+									// Resolve all term labels of this attribute in one query instead of one per option.
+									$term_labels = array();
+									if ( taxonomy_exists( (string) $attribute_name ) ) {
+										$attr_terms = wc_get_product_terms( $product->get_id(), (string) $attribute_name, array( 'fields' => 'all' ) );
+										foreach ( $attr_terms as $attr_term ) {
+											$term_labels[ (string) $attr_term->slug ] = (string) $attr_term->name;
+										}
+									}
 									$selected   = $preselected_attrs[ $attr_key ] ?? $product->get_variation_default_attribute( (string) $attribute_name );
 									?>
 									<div class="hiqb-field">
@@ -284,13 +303,7 @@ final class Popup_Form {
 											<?php foreach ( $options as $option ) : ?>
 												<?php
 												$option_slug  = (string) $option;
-												$option_label = $option_slug;
-												if ( taxonomy_exists( (string) $attribute_name ) ) {
-													$term = get_term_by( 'slug', $option_slug, (string) $attribute_name );
-													if ( $term && ! is_wp_error( $term ) ) {
-														$option_label = $term->name;
-													}
-												}
+												$option_label = $term_labels[ $option_slug ] ?? $option_slug;
 												?>
 												<option value="<?php echo esc_attr( $option_slug ); ?>" <?php selected( $selected, $option_slug ); ?>>
 													<?php echo esc_html( $option_label ); ?>

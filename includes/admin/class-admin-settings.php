@@ -72,6 +72,18 @@ final class Admin_Settings {
 			true
 		);
 
+		wp_localize_script(
+			'hiqb-admin-settings',
+			'hiqbAdminConfig',
+			array(
+				'i18n' => array(
+					'mediaTitle'  => __( 'Chọn ảnh mã QR chuyển khoản', 'hi-quick-buy' ),
+					'mediaButton' => __( 'Sử dụng ảnh này', 'hi-quick-buy' ),
+					'qrAlt'       => __( 'Mã QR chuyển khoản', 'hi-quick-buy' ),
+				),
+			)
+		);
+
 		$primary_color = sanitize_hex_color( (string) Settings::get( 'primary_color', '#d70018' ) );
 		if ( is_string( $primary_color ) && '' !== $primary_color ) {
 			wp_add_inline_style(
@@ -124,6 +136,11 @@ final class Admin_Settings {
 				'default'           => Settings::get_defaults(),
 			)
 		);
+
+		// Sections/fields are only needed to render the settings screen, not on (public) admin-ajax requests.
+		if ( wp_doing_ajax() ) {
+			return;
+		}
 
 		// Section 1: General & Trigger buttons.
 		add_settings_section(

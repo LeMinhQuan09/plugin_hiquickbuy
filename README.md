@@ -1,6 +1,6 @@
 # ⚡ HI Quick-Buy — Plugin Mua Hàng Nhanh cho WooCommerce
 
-![Version](https://img.shields.io/badge/version-1.0.1-d70018?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.3-d70018?style=flat-square)
 ![WordPress](https://img.shields.io/badge/WordPress-6.9%2B-21759b?style=flat-square&logo=wordpress&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777bb4?style=flat-square&logo=php&logoColor=white)
 ![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0%2B%20(HPOS)-96588a?style=flat-square&logo=woocommerce&logoColor=white)
@@ -102,6 +102,16 @@ Ví dụ:
 | `hiqb_bacs_accounts` | Tùy biến danh sách tài khoản ngân hàng hiển thị trong popup |
 | `hiqb_bacs_qr_url` | Tùy biến URL ảnh mã QR chuyển khoản |
 | `hiqb_bacs_transfer_ref` | Tùy biến chuỗi nội dung chuyển khoản |
+| `hiqb_enqueue_frontend_assets` | Ép nạp CSS/JS trên trang hiện tại (nút do page builder hoặc cache chèn vào) |
+| `hiqb_order_rate_limit` / `hiqb_order_rate_limit_window` | Số đơn tối đa mỗi IP trong một khoảng thời gian (mặc định 5 đơn / 600 giây, `0` để tắt) |
+| `hiqb_max_order_quantity` | Số lượng tối đa mỗi đơn (mặc định 9999) |
+| `hiqb_enable_spam_guard` | Bật/tắt honeypot và kiểm tra thời gian điền form (mặc định bật) |
+| `hiqb_min_form_fill_seconds` | Số giây tối thiểu từ lúc mở form tới lúc đặt hàng (mặc định 3) |
+| `hiqb_form_token_lifetime` | Thời gian sống của form đã mở, tính bằng giây (mặc định 1 ngày) |
+
+| Action Hook | Mô tả |
+|---|---|
+| `hiqb_upgraded` | Chạy một lần sau khi plugin được cập nhật lên phiên bản mới (`$from_version`, `$to_version`) |
 
 ---
 
@@ -113,7 +123,7 @@ hi-quick-buy/
 ├── uninstall.php                        # Dọn dẹp options & transients khi gỡ plugin
 ├── includes/
 │   ├── class-plugin.php                 # Bộ điều phối chính, kiểm tra WooCommerce & nạp assets
-│   ├── class-activator.php              # Khởi tạo cài đặt mặc định khi kích hoạt
+│   ├── class-activator.php              # Khởi tạo cài đặt & routine nâng cấp theo phiên bản
 │   ├── class-deactivator.php            # Dọn cache khi tắt plugin
 │   ├── class-settings.php               # Quản lý cấu hình & sanitize dữ liệu
 │   ├── class-trigger.php                # Hiển thị nút Mua nhanh (Single, Loop, Block, Shortcode)
@@ -121,9 +131,12 @@ hi-quick-buy/
 │   ├── class-locations.php              # Địa giới hành chính VN 2 cấp + mã bưu chính
 │   ├── class-shipping-calculator.php    # Tính phí vận chuyển độc lập (không đụng WC()->cart)
 │   ├── class-order-handler.php          # Tạo đơn WooCommerce CRUD API & thông tin BACS/QR
+│   ├── class-spam-guard.php             # Honeypot & kiểm tra thời gian điền form chống spam
 │   └── admin/
 │       ├── class-admin-settings.php     # Trang cài đặt WooCommerce → HI Quick-Buy
 │       └── class-github-updater.php     # Cơ chế Auto-Update từ GitHub Releases
+├── languages/
+│   └── hi-quick-buy.pot                 # File mẫu để dịch (tạo bằng `wp i18n make-pot`)
 ├── assets/
 │   ├── css/
 │   │   ├── hi-quick-buy.css             # Giao diện nút & popup frontend
@@ -137,6 +150,25 @@ hi-quick-buy/
     └── workflows/
         └── release.yml                  # CI/CD tự động build ZIP & phát hành GitHub Release
 ```
+
+---
+
+## 📝 Changelog
+
+### 1.0.3
+- Tự làm mới nonce khi trang bị full-page cache, khách không còn bị lỗi "-1" khi đặt hàng.
+- Chống spam: thêm honeypot và chữ ký thời gian điền form (tối thiểu 3 giây).
+- Báo lỗi và tự tải lại phí ship khi phương thức giao hàng khách đã chọn không còn tồn tại, thay vì tự đổi sang gói khác.
+- Thêm routine nâng cấp: chạy một lần sau mỗi lần cập nhật (dọn cache, action `hiqb_upgraded`).
+- Thêm `languages/hi-quick-buy.pot`.
+
+### 1.0.2
+- Thêm `truncate_text()` cắt chuỗi UTF-8 an toàn; chỉnh độ rộng ô số trong trang cài đặt.
+
+### 1.0.1
+- Vá bảo mật: chặn xem/đặt sản phẩm và biến thể chưa xuất bản, sửa DOM XSS ở `escapeHtml()`, kiểm tra mã tỉnh/phường, giới hạn tần suất đặt đơn, giới hạn phạm vi token GitHub.
+- Hiệu năng: chỉ nạp CSS/JS ở trang cần thiết, giảm N+1 truy vấn biến thể.
+- Dịch được toàn bộ chuỗi trong JS.
 
 ---
 

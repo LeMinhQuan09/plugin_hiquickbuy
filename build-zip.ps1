@@ -25,7 +25,8 @@ $includeItems = @(
     'uninstall.php',
     'README.md',
     'includes',
-    'assets'
+    'assets',
+    'languages'
 )
 
 foreach ($item in $includeItems) {

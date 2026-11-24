@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace HIQuickBuy;
 
 use Throwable;
+use WC_Geolocation;
 use WC_Order_Item_Shipping;
 use WC_Product;
 use WC_Product_Variable;
@@ -63,6 +64,27 @@ final class Order_Handler {
 			);
 		}
 
+		if ( $this->is_rate_limited() ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Bạn đã đặt quá nhiều đơn trong thời gian ngắn. Vui lòng thử lại sau ít phút.', 'hi-quick-buy' ) ),
+				429
+			);
+		}
+
+		$spam_error = Spam_Guard::validate(
+			isset( $_POST[ Spam_Guard::HONEYPOT_FIELD ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ Spam_Guard::HONEYPOT_FIELD ] ) ) : '',
+			isset( $_POST[ Spam_Guard::TOKEN_FIELD ] ) ? sanitize_text_field( wp_unslash( (string) $_POST[ Spam_Guard::TOKEN_FIELD ] ) ) : ''
+		);
+		if ( null !== $spam_error ) {
+			wp_send_json_error(
+				array(
+					'code'    => 'spam_check_failed',
+					'message' => $spam_error,
+				),
+				400
+			);
+		}
+
 		// Explicitly read, unslash, and sanitize every field (never trust raw $_POST).
 		$product_id      = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
 		$variation_id    = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
@@ -79,6 +101,13 @@ final class Order_Handler {
 		$order_note      = isset( $_POST['order_note'] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST['order_note'] ) ) : '';
 		$payment_method  = isset( $_POST['payment_method'] ) ? sanitize_key( wp_unslash( (string) $_POST['payment_method'] ) ) : 'cod';
 		$shipping_choice = isset( $_POST['shipping_method'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['shipping_method'] ) ) : '';
+
+		// Cap free-text lengths so a public request cannot store oversized payloads.
+		$full_name      = $this->truncate_text( $full_name, 100 );
+		$address_detail = $this->truncate_text( $address_detail, 255 );
+		$order_note     = $this->truncate_text( $order_note, 1000 );
+		$province_code  = $this->truncate_text( $province_code, 20 );
+		$ward_code      = $this->truncate_text( $ward_code, 20 );
 
 		// Validate customer inputs.
 		if ( '' === $full_name ) {
@@ -109,11 +138,24 @@ final class Order_Handler {
 			);
 		}
 
-		if ( ! empty( $settings['show_vn_locations'] ) && ( '' === $province_code || '' === $ward_code ) ) {
+		// Resolve location codes against the bundled dataset: unknown codes are never stored.
+		$province_name = '' !== $province_code ? $this->locations->get_province_name( $province_code ) : '';
+		$ward_name     = ( '' !== $province_name && '' !== $ward_code )
+			? $this->locations->get_ward_name( $province_code, $ward_code )
+			: '';
+
+		if ( ! empty( $settings['show_vn_locations'] ) && ( '' === $province_name || '' === $ward_name ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Vui lòng chọn Tỉnh / Thành phố và Phường / Xã / Đặc khu.', 'hi-quick-buy' ) ),
 				422
 			);
+		}
+
+		if ( '' === $province_name ) {
+			$province_code = '';
+		}
+		if ( '' === $ward_name ) {
+			$ward_code = '';
 		}
 
 		if ( ! empty( $settings['show_address_field'] ) && '' === $address_detail ) {
@@ -130,7 +172,11 @@ final class Order_Handler {
 			&& ! empty( $settings['allow_no_price'] )
 			&& ! $parent_product->is_type( array( 'external', 'grouped' ) );
 
-		if ( ! $parent_product instanceof WC_Product || ( ! $parent_product->is_purchasable() && ! $allow_contact ) ) {
+		if (
+			! $parent_product instanceof WC_Product
+			|| ! Trigger::is_publicly_available( $parent_product )
+			|| ( ! $parent_product->is_purchasable() && ! $allow_contact )
+		) {
 			wp_send_json_error(
 				array( 'message' => __( 'Sản phẩm không hợp lệ hoặc không thể mua.', 'hi-quick-buy' ) ),
 				404
@@ -149,7 +195,7 @@ final class Order_Handler {
 			}
 
 			$variation_obj = wc_get_product( $variation_id );
-			if ( ! $variation_obj instanceof WC_Product || $variation_obj->get_parent_id() !== $parent_product->get_id() ) {
+			if ( ! $variation_obj instanceof WC_Product || ! Trigger::is_variation_orderable( $variation_obj, $parent_product ) ) {
 				wp_send_json_error(
 					array( 'message' => __( 'Biến thể sản phẩm không hợp lệ.', 'hi-quick-buy' ) ),
 					422
@@ -165,6 +211,33 @@ final class Order_Handler {
 		if ( ! $order_product->is_in_stock() && ! $order_product->backorders_allowed() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Sản phẩm hiện đã hết hàng.', 'hi-quick-buy' ) ),
+				422
+			);
+		}
+
+		if ( $order_product->is_sold_individually() && $quantity > 1 ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Sản phẩm này chỉ được mua 1 sản phẩm cho mỗi đơn hàng.', 'hi-quick-buy' ) ),
+				422
+			);
+		}
+
+		/**
+		 * Filter the maximum quantity accepted for a single Quick Buy order.
+		 *
+		 * @param int        $max_quantity  Maximum quantity per order.
+		 * @param WC_Product $order_product Product or variation being ordered.
+		 */
+		$max_quantity = max( 1, (int) apply_filters( 'hiqb_max_order_quantity', 9999, $order_product ) );
+		if ( $quantity > $max_quantity ) {
+			wp_send_json_error(
+				array(
+					'message' => sprintf(
+						/* translators: %d: maximum quantity per order */
+						__( 'Số lượng tối đa cho mỗi đơn hàng là %d.', 'hi-quick-buy' ),
+						$max_quantity
+					),
+				),
 				422
 			);
 		}
@@ -200,11 +273,7 @@ final class Order_Handler {
 			$payment_method = $allowed_gateways[0];
 		}
 
-		// Resolve Vietnamese 2-level address parts & postal code.
-		$province_name = '' !== $province_code ? $this->locations->get_province_name( $province_code ) : '';
-		$ward_name     = ( '' !== $province_code && '' !== $ward_code )
-			? $this->locations->get_ward_name( $province_code, $ward_code )
-			: '';
+		// Resolve postal code from the validated Vietnamese 2-level address.
 		$postcode      = ( '' !== $province_code && '' !== $ward_code )
 			? $this->locations->get_ward_postcode( $province_code, $ward_code )
 			: '';
@@ -259,6 +328,17 @@ final class Order_Handler {
 				)
 			);
 			$selected_rate = $this->shipping_calculator->resolve_selected_rate( $shipping_rates, $shipping_choice );
+
+			// The rate the customer saw no longer exists (zone/method changed): never silently swap it.
+			if ( null === $selected_rate && ! empty( $shipping_rates ) ) {
+				wp_send_json_error(
+					array(
+						'code'    => 'shipping_changed',
+						'message' => __( 'Phương thức giao hàng đã thay đổi. Vui lòng kiểm tra lại phí vận chuyển rồi đặt hàng lại.', 'hi-quick-buy' ),
+					),
+					409
+				);
+			}
 		}
 
 		try {
@@ -276,6 +356,8 @@ final class Order_Handler {
 					500
 				);
 			}
+
+			$this->record_order_for_rate_limit();
 
 			// 2. Add product / variation & quantity.
 			if ( $is_contact_price ) {
@@ -377,9 +459,9 @@ final class Order_Handler {
 			$message = strtr(
 				(string) $settings['success_message'],
 				array(
-					'{order_id}'      => (string) $order->get_order_number(),
-					'{customer_name}' => $salutation_label . ' ' . $full_name,
-					'{total}'         => $total_formatted,
+					'{order_id}'      => esc_html( (string) $order->get_order_number() ),
+					'{customer_name}' => esc_html( $salutation_label . ' ' . $full_name ),
+					'{total}'         => esc_html( $total_formatted ),
 				)
 			);
 
@@ -412,6 +494,63 @@ final class Order_Handler {
 				500
 			);
 		}
+	}
+
+	/**
+	 * Transient key + limits used to throttle order creation per client IP.
+	 *
+	 * @return array{key: string, limit: int, window: int}|null Null when throttling is disabled.
+	 */
+	private function get_rate_limit_config(): ?array {
+		/**
+		 * Filter the maximum number of Quick Buy orders one IP may create per window (0 disables the limit).
+		 *
+		 * @param int $limit Orders allowed per window.
+		 */
+		$limit = (int) apply_filters( 'hiqb_order_rate_limit', 5 );
+
+		/**
+		 * Filter the rate limit window length in seconds.
+		 *
+		 * @param int $window Window length in seconds.
+		 */
+		$window = (int) apply_filters( 'hiqb_order_rate_limit_window', 10 * MINUTE_IN_SECONDS );
+
+		if ( $limit <= 0 || $window <= 0 || current_user_can( 'manage_woocommerce' ) ) {
+			return null;
+		}
+
+		$ip = class_exists( WC_Geolocation::class ) ? (string) WC_Geolocation::get_ip_address() : '';
+		if ( '' === $ip ) {
+			return null;
+		}
+
+		return array(
+			'key'    => 'hiqb_rl_' . md5( $ip ),
+			'limit'  => $limit,
+			'window' => $window,
+		);
+	}
+
+	/**
+	 * Whether the current client already created too many orders recently.
+	 */
+	private function is_rate_limited(): bool {
+		$config = $this->get_rate_limit_config();
+
+		return null !== $config && (int) get_transient( $config['key'] ) >= $config['limit'];
+	}
+
+	/**
+	 * Count a successfully created order towards the client's rate limit.
+	 */
+	private function record_order_for_rate_limit(): void {
+		$config = $this->get_rate_limit_config();
+		if ( null === $config ) {
+			return;
+		}
+
+		set_transient( $config['key'], (int) get_transient( $config['key'] ) + 1, $config['window'] );
 	}
 
 	/**
@@ -487,6 +626,17 @@ final class Order_Handler {
 			'qr_url'       => '' !== $qr_url ? esc_url_raw( $qr_url ) : '',
 			'accounts'     => $accounts,
 		);
+	}
+
+	/**
+	 * Safely truncate UTF-8 text without requiring the mbstring extension.
+	 */
+	private function truncate_text( string $text, int $max_length ): string {
+		if ( function_exists( 'mb_substr' ) ) {
+			return mb_substr( $text, 0, $max_length, 'UTF-8' );
+		}
+
+		return substr( $text, 0, $max_length );
 	}
 
 	/**

@@ -956,3 +956,12 @@ body.hiqb-modal-open {
 		margin: 0 auto;
 	}
 }
+
+/* Anti-spam honeypot: invisible to humans and screen readers, still in the DOM for bots. */
+.hiqb-hp {
+	position: absolute !important;
+	left: -10000px !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}

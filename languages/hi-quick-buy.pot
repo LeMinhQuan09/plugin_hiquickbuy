@@ -1,0 +1,777 @@
+# Copyright (C) 2026 hiseo
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: HI Quick-Buy 1.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/hi-quick-buy\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-24T16:10:08+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: hi-quick-buy\n"
+
+#. Plugin Name of the plugin
+#: hi-quick-buy.php
+#: includes/admin/class-admin-settings.php:102
+#: includes/admin/class-admin-settings.php:103
+#: includes/admin/class-admin-settings.php:317
+#: includes/admin/class-github-updater.php:360
+#: includes/admin/class-github-updater.php:372
+#: includes/admin/class-github-updater.php:389
+#: includes/class-plugin.php:152
+msgid "HI Quick-Buy"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: hi-quick-buy.php
+msgid "https://hiseo.vn"
+msgstr ""
+
+#. Description of the plugin
+#: hi-quick-buy.php
+#: includes/admin/class-github-updater.php:161
+msgid "Thêm nút Mua nhanh và popup đặt hàng gọn nhẹ cho WooCommerce. Hỗ trợ sản phẩm biến thể, sản phẩm giá Liên hệ, chọn địa chỉ Việt Nam, tính phí giao hàng và chuyển khoản mã QR."
+msgstr ""
+
+#. Author of the plugin
+#: hi-quick-buy.php
+msgid "hiseo"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:80
+msgid "Chọn ảnh mã QR chuyển khoản"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:81
+msgid "Sử dụng ảnh này"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:82
+#: includes/admin/class-admin-settings.php:437
+#: includes/class-plugin.php:287
+msgid "Mã QR chuyển khoản"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:120
+msgid "Cài đặt"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:148
+msgid "1. Cài đặt chung & Nút Mua nhanh"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:153
+msgid "Bật HI Quick-Buy"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:153
+msgid "Kích hoạt chức năng mua hàng nhanh trên toàn site."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:154
+msgid "Hiện ở trang chi tiết sản phẩm"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:154
+msgid "Tự động hiển thị sau nút Thêm vào giỏ hàng."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:155
+msgid "Hiện ở danh sách / danh mục sản phẩm"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:155
+msgid "Hiển thị nút Mua nhanh ngay dưới mỗi sản phẩm ở trang Cửa hàng, Danh mục và kết quả tìm kiếm."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:156
+msgid "Hiển thị với sản phẩm chưa có giá"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:156
+msgid "Vẫn hiển thị nút Mua nhanh và cho phép đặt hàng / yêu cầu báo giá khi sản phẩm chưa nhập giá."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:157
+msgid "Nhãn hiển thị khi chưa có giá"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:157
+msgid "Ví dụ: Liên hệ, Báo giá sau..."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:158
+msgid "Màu chủ đạo (Nút & Popup)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:158
+msgid "Áp dụng cho nút Mua nhanh, thanh tiêu đề popup, radio chọn và nút Đặt hàng ngay. Mặc định: #d70018."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:159
+msgid "Tiêu đề nút bấm"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:160
+msgid "Tiêu đề phụ nút bấm"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:160
+msgid "Hiển thị bên dưới tiêu đề chính ở trang chi tiết sản phẩm."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:165
+msgid "2. Trường thông tin & Thanh toán"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:172
+msgid "Trường Email"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:175
+msgid "Ẩn trường Email"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:176
+msgid "Hiển thị (không bắt buộc)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:177
+msgid "Hiển thị (bắt buộc nhập)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:181
+msgid "Dropdown 2 cấp Tỉnh / Thành → Phường / Xã"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:181
+msgid "Sử dụng danh sách 34 Tỉnh/Thành phố và 3.321 Phường/Xã/Đặc khu kèm mã bưu chính."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:182
+msgid "Trường địa chỉ chi tiết"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:182
+msgid "Hiển thị ô nhập số nhà, tên đường nhận hàng."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:183
+msgid "Trường ghi chú đơn hàng"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:183
+msgid "Cho phép khách ghi chú thời gian giao hàng hoặc yêu cầu xuất hóa đơn."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:184
+msgid "Cho phép chọn cổng thanh toán"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:184
+msgid "Hiển thị lựa chọn phương thức thanh toán ngay trong popup."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:185
+#: includes/class-order-handler.php:389
+#: includes/class-popup-form.php:452
+msgid "Thanh toán khi nhận hàng (COD)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:185
+msgid "Cho phép khách hàng thanh toán tiền mặt khi nhận hàng."
+msgstr ""
+
+#. translators: 1: number of configured bank accounts, 2: link to WooCommerce BACS settings
+#: includes/admin/class-admin-settings.php:194
+#, php-format
+msgid "Đã đồng bộ %1$d tài khoản ngân hàng từ WooCommerce BACS."
+msgstr ""
+
+#. translators: 1: number of configured bank accounts, 2: link to WooCommerce BACS settings
+#: includes/admin/class-admin-settings.php:194
+msgid "Quản lý tài khoản"
+msgstr ""
+
+#. translators: %s: link to WooCommerce BACS settings
+#: includes/admin/class-admin-settings.php:201
+#, php-format
+msgid "Chưa có tài khoản ngân hàng nào. Vui lòng thêm tài khoản tại %s (hoặc tải ảnh QR bên dưới) để popup hiển thị hướng dẫn chuyển khoản."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:202
+msgid "WooCommerce → Cài đặt → Thanh toán → Chuyển khoản ngân hàng (BACS)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:208
+#: includes/class-order-handler.php:390
+#: includes/class-popup-form.php:458
+msgid "Chuyển khoản ngân hàng (BACS)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:210
+msgid "Cho phép khách hàng thanh toán bằng chuyển khoản ngân hàng."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:216
+msgid "Ảnh mã QR chuyển khoản"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:218
+msgid "Tải lên ảnh mã QR chính thức xuất trực tiếp từ ứng dụng ngân hàng của bạn để hiển thị ngay trong popup khi khách chọn BACS."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:222
+msgid "Giải thích các biến tự động (giữ nguyên dấu ngoặc nhọn {…}, nên giữ {order_id} để dễ đối soát):"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:224
+msgid "Mã đơn hàng (nên giữ lại để nhận diện đúng đơn khi khách chuyển khoản)."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:225
+msgid "Số điện thoại người mua."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:226
+msgid "Họ tên người mua (tự động bỏ dấu tiếng Việt)."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:228
+msgid "Ví dụ: nhập"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:233
+msgid "Mẫu nội dung chuyển khoản"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:242
+msgid "3. Tính phí vận chuyển độc lập"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:244
+msgid "Phí vận chuyển được tính bằng gói giả lập độc lập theo WooCommerce Shipping Zones và KHÔNG can thiệp vào giỏ hàng hiện tại của khách."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:249
+msgid "Bật tính phí vận chuyển"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:249
+msgid "Tự động tính phí giao hàng theo Tỉnh/Thành và Phường/Xã đã chọn."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:250
+msgid "Tên gói vận chuyển mặc định"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:250
+msgid "Dùng khi khu vực giao hàng chưa khớp Shipping Zone nào trong WooCommerce."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:251
+msgid "Phí vận chuyển mặc định"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:251
+msgid "Nhập 0 nếu muốn miễn phí vận chuyển mặc định."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:256
+msgid "4. Hành vi sau đặt hàng & Thông báo"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:263
+msgid "Sau khi đặt hàng thành công"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:266
+msgid "Hiển thị thông báo chúc mừng ngay trong Popup"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:267
+msgid "Chuyển hướng sang trang Cảm ơn (Order Received)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:272
+msgid "Giải thích các biến tự động (giữ nguyên dấu ngoặc nhọn {…}):"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:274
+msgid "Mã đơn hàng vừa tạo."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:275
+msgid "Danh xưng + Họ tên khách hàng (ví dụ: Anh Nguyễn Văn A)."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:276
+msgid "Tổng tiền đơn hàng (hoặc nhãn Liên hệ nếu sản phẩm chưa có giá)."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:282
+msgid "Mẫu thông báo thành công"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:290
+msgid "Mẫu thông báo thất bại"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:296
+msgid "Xóa dữ liệu khi gỡ bỏ plugin"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:298
+msgid "Xóa toàn bộ cấu hình plugin khi gỡ cài đặt HI Quick-Buy."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:307
+msgid "Bạn không có quyền truy cập trang cài đặt này."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:321
+msgid "Cấu hình nút Mua nhanh, form đặt hàng chuẩn Việt Nam và tính phí vận chuyển độc lập."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:325
+msgid "Shortcode:"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:329
+msgid "Cài đặt HI Quick-Buy"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:361
+msgid "Các thay đổi sẽ có hiệu lực ngay trên trang cửa hàng sau khi lưu."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:363
+msgid "Lưu cài đặt"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:442
+msgid "Chọn ảnh mã QR"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php:445
+msgid "Xóa ảnh"
+msgstr ""
+
+#: includes/admin/class-github-updater.php:147
+msgid "Cập nhật từ GitHub Release."
+msgstr ""
+
+#: includes/admin/class-github-updater.php:256
+msgid "Không thể chuẩn hóa thư mục plugin sau khi giải nén từ GitHub."
+msgstr ""
+
+#: includes/admin/class-github-updater.php:296
+msgid "Kiểm tra cập nhật"
+msgstr ""
+
+#: includes/admin/class-github-updater.php:307
+msgid "Bạn không có quyền kiểm tra cập nhật plugin."
+msgstr ""
+
+#. translators: %s: new version number
+#: includes/admin/class-github-updater.php:364
+#, php-format
+msgid "Đã có phiên bản mới %s trên GitHub. Bạn có thể bấm \"Cập nhật ngay\" ở bên dưới."
+msgstr ""
+
+#. translators: %s: current version number
+#: includes/admin/class-github-updater.php:376
+#, php-format
+msgid "Bạn đang dùng phiên bản mới nhất (%s)."
+msgstr ""
+
+#: includes/admin/class-github-updater.php:384
+msgid "Không thể kết nối GitHub Releases (vui lòng kiểm tra HIQB_GITHUB_TOKEN hoặc đã tạo ít nhất 1 Release trên GitHub)."
+msgstr ""
+
+#: includes/admin/class-github-updater.php:385
+msgid "Không thể đọc GitHub Release. Với Private Repository, vui lòng khai báo HIQB_GITHUB_TOKEN trong wp-config.php."
+msgstr ""
+
+#: includes/class-order-handler.php:62
+msgid "Chức năng đặt mua nhanh hiện đang tạm tắt."
+msgstr ""
+
+#: includes/class-order-handler.php:69
+msgid "Bạn đã đặt quá nhiều đơn trong thời gian ngắn. Vui lòng thử lại sau ít phút."
+msgstr ""
+
+#: includes/class-order-handler.php:115
+#: includes/class-plugin.php:270
+msgid "Vui lòng nhập họ và tên."
+msgstr ""
+
+#: includes/class-order-handler.php:122
+msgid "Số điện thoại Việt Nam không hợp lệ (hỗ trợ dạng 0912345678 hoặc +84 912345678)."
+msgstr ""
+
+#: includes/class-order-handler.php:130
+msgid "Vui lòng nhập địa chỉ email hợp lệ."
+msgstr ""
+
+#: includes/class-order-handler.php:136
+msgid "Địa chỉ email không đúng định dạng."
+msgstr ""
+
+#: includes/class-order-handler.php:149
+msgid "Vui lòng chọn Tỉnh / Thành phố và Phường / Xã / Đặc khu."
+msgstr ""
+
+#: includes/class-order-handler.php:163
+#: includes/class-plugin.php:277
+msgid "Vui lòng nhập địa chỉ nhận hàng."
+msgstr ""
+
+#: includes/class-order-handler.php:181
+msgid "Sản phẩm không hợp lệ hoặc không thể mua."
+msgstr ""
+
+#: includes/class-order-handler.php:192
+msgid "Vui lòng chọn đầy đủ biến thể sản phẩm."
+msgstr ""
+
+#: includes/class-order-handler.php:200
+msgid "Biến thể sản phẩm không hợp lệ."
+msgstr ""
+
+#: includes/class-order-handler.php:213
+#: includes/class-plugin.php:269
+msgid "Sản phẩm hiện đã hết hàng."
+msgstr ""
+
+#: includes/class-order-handler.php:220
+msgid "Sản phẩm này chỉ được mua 1 sản phẩm cho mỗi đơn hàng."
+msgstr ""
+
+#. translators: %d: maximum quantity per order
+#: includes/class-order-handler.php:237
+#, php-format
+msgid "Số lượng tối đa cho mỗi đơn hàng là %d."
+msgstr ""
+
+#. translators: %d: available stock quantity
+#: includes/class-order-handler.php:252
+#, php-format
+msgid "Số lượng tồn kho không đủ (chỉ còn %d sản phẩm)."
+msgstr ""
+
+#: includes/class-order-handler.php:286
+#: includes/class-popup-form.php:376
+msgid "Chị"
+msgstr ""
+
+#: includes/class-order-handler.php:286
+#: includes/class-popup-form.php:372
+msgid "Anh"
+msgstr ""
+
+#: includes/class-order-handler.php:313
+#: includes/class-plugin.php:279
+#: includes/class-popup-form.php:132
+#: includes/class-settings.php:44
+msgid "Liên hệ"
+msgstr ""
+
+#: includes/class-order-handler.php:337
+msgid "Phương thức giao hàng đã thay đổi. Vui lòng kiểm tra lại phí vận chuyển rồi đặt hàng lại."
+msgstr ""
+
+#. translators: 1: customer salutation and name, 2: contact price label
+#: includes/class-order-handler.php:421
+#, php-format
+msgid "Đơn yêu cầu báo giá (%2$s) tạo qua HI Quick-Buy (%1$s)."
+msgstr ""
+
+#. translators: %s: customer salutation and name
+#: includes/class-order-handler.php:427
+#, php-format
+msgid "Đơn hàng nhanh tạo qua HI Quick-Buy (%s)."
+msgstr ""
+
+#: includes/class-plugin.php:153
+msgid "Plugin yêu cầu cài đặt và kích hoạt WooCommerce để hoạt động."
+msgstr ""
+
+#: includes/class-plugin.php:264
+msgid "Đang tải thông tin sản phẩm..."
+msgstr ""
+
+#: includes/class-plugin.php:265
+msgid "Đang xử lý đơn hàng..."
+msgstr ""
+
+#: includes/class-plugin.php:266
+msgid "Không thể tải form đặt hàng. Vui lòng thử lại."
+msgstr ""
+
+#: includes/class-plugin.php:268
+msgid "Vui lòng chọn đầy đủ thuộc tính sản phẩm."
+msgstr ""
+
+#: includes/class-plugin.php:271
+msgid "Số điện thoại Việt Nam không hợp lệ (ví dụ: 0912345678 hoặc +84 912345678)."
+msgstr ""
+
+#: includes/class-plugin.php:272
+msgid "Địa chỉ email không hợp lệ."
+msgstr ""
+
+#: includes/class-plugin.php:273
+#: includes/class-popup-form.php:409
+msgid "Chọn Tỉnh / Thành phố"
+msgstr ""
+
+#: includes/class-plugin.php:274
+msgid "Chọn Phường / Xã / Đặc khu"
+msgstr ""
+
+#: includes/class-plugin.php:275
+msgid "Vui lòng chọn Tỉnh / Thành phố."
+msgstr ""
+
+#: includes/class-plugin.php:276
+msgid "Vui lòng chọn Phường / Xã / Đặc khu."
+msgstr ""
+
+#: includes/class-plugin.php:278
+#: includes/class-popup-form.php:221
+#: includes/class-shipping-calculator.php:143
+#: includes/class-shipping-calculator.php:160
+msgid "Miễn phí"
+msgstr ""
+
+#: includes/class-plugin.php:280
+msgid "Đang tính phí vận chuyển..."
+msgstr ""
+
+#: includes/class-plugin.php:281
+msgid "Đặt hàng thành công!"
+msgstr ""
+
+#: includes/class-plugin.php:282
+msgid "Mã đơn hàng:"
+msgstr ""
+
+#: includes/class-plugin.php:283
+msgid "Xem chi tiết đơn hàng"
+msgstr ""
+
+#: includes/class-plugin.php:284
+msgid "Tiếp tục mua sắm"
+msgstr ""
+
+#: includes/class-plugin.php:285
+msgid "Tìm kiếm..."
+msgstr ""
+
+#: includes/class-plugin.php:286
+msgid "Không tìm thấy kết quả"
+msgstr ""
+
+#: includes/class-plugin.php:288
+msgid "Quét mã QR để chuyển khoản"
+msgstr ""
+
+#: includes/class-plugin.php:289
+msgid "Ngân hàng:"
+msgstr ""
+
+#: includes/class-plugin.php:290
+msgid "Chủ tài khoản:"
+msgstr ""
+
+#: includes/class-plugin.php:291
+msgid "Số tài khoản:"
+msgstr ""
+
+#: includes/class-plugin.php:292
+msgid "Số tiền:"
+msgstr ""
+
+#: includes/class-plugin.php:293
+msgid "Nội dung CK:"
+msgstr ""
+
+#: includes/class-plugin.php:294
+msgid "Thông tin chuyển khoản ngân hàng"
+msgstr ""
+
+#: includes/class-plugin.php:295
+msgid "Sao chép"
+msgstr ""
+
+#: includes/class-plugin.php:296
+msgid "Đã chép"
+msgstr ""
+
+#: includes/class-popup-form.php:67
+msgid "Đóng cửa sổ"
+msgstr ""
+
+#: includes/class-popup-form.php:98
+msgid "Sản phẩm không tồn tại hoặc không thể đặt mua."
+msgstr ""
+
+#. translators: %s: product name
+#: includes/class-popup-form.php:241
+#, php-format
+msgid "Đặt mua %s"
+msgstr ""
+
+#: includes/class-popup-form.php:266
+msgid "Số lượng:"
+msgstr ""
+
+#: includes/class-popup-form.php:268
+msgid "Giảm số lượng"
+msgstr ""
+
+#: includes/class-popup-form.php:270
+msgid "Tăng số lượng"
+msgstr ""
+
+#. translators: %s: attribute label
+#: includes/class-popup-form.php:302
+#, php-format
+msgid "Chọn %s"
+msgstr ""
+
+#: includes/class-popup-form.php:322
+msgid "Phương thức vận chuyển"
+msgstr ""
+
+#: includes/class-popup-form.php:342
+msgid "Tạm tính:"
+msgstr ""
+
+#: includes/class-popup-form.php:347
+msgid "Phí vận chuyển:"
+msgstr ""
+
+#: includes/class-popup-form.php:354
+msgid "Tổng cộng:"
+msgstr ""
+
+#: includes/class-popup-form.php:360
+msgid "Bạn vui lòng nhập đúng số điện thoại để chúng tôi sẽ gọi xác nhận đơn hàng trước khi giao hàng. Xin cảm ơn!"
+msgstr ""
+
+#: includes/class-popup-form.php:367
+msgid "Thông tin người mua"
+msgstr ""
+
+#: includes/class-popup-form.php:369
+msgid "Danh xưng"
+msgstr ""
+
+#: includes/class-popup-form.php:382
+msgid "Họ và tên"
+msgstr ""
+
+#: includes/class-popup-form.php:387
+msgid "Số điện thoại"
+msgstr ""
+
+#: includes/class-popup-form.php:396
+msgid "Địa chỉ email"
+msgstr ""
+
+#: includes/class-popup-form.php:397
+msgid "Địa chỉ email (Không bắt buộc)"
+msgstr ""
+
+#: includes/class-popup-form.php:408
+msgid "Tìm Tỉnh / Thành phố..."
+msgstr ""
+
+#: includes/class-popup-form.php:408
+msgid "Tỉnh / Thành phố"
+msgstr ""
+
+#: includes/class-popup-form.php:418
+msgid "Tìm Phường / Xã / Đặc khu..."
+msgstr ""
+
+#: includes/class-popup-form.php:418
+msgid "Phường / Xã / Đặc khu"
+msgstr ""
+
+#: includes/class-popup-form.php:419
+msgid "Chọn Phường / Xã"
+msgstr ""
+
+#: includes/class-popup-form.php:428
+msgid "Địa chỉ (Số nhà, tên đường...)"
+msgstr ""
+
+#: includes/class-popup-form.php:428
+msgid "Địa chỉ chi tiết"
+msgstr ""
+
+#: includes/class-popup-form.php:435
+msgid "Ghi chú đơn hàng (Không bắt buộc)"
+msgstr ""
+
+#: includes/class-popup-form.php:435
+msgid "Ghi chú đơn hàng"
+msgstr ""
+
+#: includes/class-popup-form.php:447
+msgid "Phương thức thanh toán"
+msgstr ""
+
+#: includes/class-popup-form.php:468
+msgid "Đặt hàng ngay"
+msgstr ""
+
+#: includes/class-settings.php:46
+#: includes/class-trigger.php:210
+msgid "Mua ngay"
+msgstr ""
+
+#: includes/class-settings.php:47
+msgid "Giao tận nơi hoặc nhận tại cửa hàng"
+msgstr ""
+
+#: includes/class-settings.php:59
+#: includes/class-shipping-calculator.php:152
+msgid "Giao hàng tiêu chuẩn"
+msgstr ""
+
+#: includes/class-settings.php:61
+msgid "Cảm ơn {customer_name}! Đơn hàng #{order_id} với tổng giá trị {total} đã được tiếp nhận. Chúng tôi sẽ liên hệ xác nhận sớm nhất."
+msgstr ""
+
+#: includes/class-settings.php:62
+msgid "Có lỗi xảy ra khi đặt hàng. Vui lòng kiểm tra lại thông tin hoặc thử lại sau."
+msgstr ""
+
+#: includes/class-shipping-calculator.php:218
+msgid "Sản phẩm không hợp lệ."
+msgstr ""
+
+#: includes/class-spam-guard.php:48
+msgid "Để trống trường này"
+msgstr ""
+
+#: includes/class-spam-guard.php:68
+msgid "Không thể xử lý yêu cầu. Vui lòng tải lại trang và thử lại."
+msgstr ""
+
+#: includes/class-spam-guard.php:101
+msgid "Phiên đặt hàng đã hết hạn. Vui lòng tải lại trang và thử lại."
+msgstr ""
+
+#: includes/class-spam-guard.php:105
+msgid "Bạn thao tác quá nhanh. Vui lòng đợi vài giây rồi bấm đặt hàng lại."
+msgstr ""

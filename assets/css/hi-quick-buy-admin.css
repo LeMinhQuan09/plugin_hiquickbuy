@@ -264,6 +264,12 @@
 	min-height: 38px;
 }
 
+.hiqb-admin-card input[type="number"],
+.hiqb-admin-card input[type="number"].small-text {
+	width: 160px;
+	min-width: 140px;
+}
+
 .wp-core-ui .hiqb-admin-card select {
 	min-width: 280px;
 	max-width: 100%;

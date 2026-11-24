@@ -37,6 +37,10 @@ final class Shipping_Calculator {
 	 * Register AJAX endpoint for live shipping calculation.
 	 */
 	public function register(): void {
+		if ( ! Settings::get( 'enabled' ) ) {
+			return;
+		}
+
 		add_action( 'wp_ajax_hiqb_calculate_shipping', array( $this, 'ajax_calculate_shipping' ) );
 		add_action( 'wp_ajax_nopriv_hiqb_calculate_shipping', array( $this, 'ajax_calculate_shipping' ) );
 	}
@@ -117,7 +121,8 @@ final class Shipping_Calculator {
 
 		if ( function_exists( 'WC' ) && WC()->shipping() ) {
 			$shipping = WC()->shipping();
-			$result   = $shipping->calculate_shipping_for_package( $package, 0 );
+			// Dedicated package key so the session rate cache of the real cart (package 0) is never overwritten.
+			$result   = $shipping->calculate_shipping_for_package( $package, 'hiqb' );
 
 			if ( is_array( $result ) && ! empty( $result['rates'] ) ) {
 				foreach ( $result['rates'] as $rate_id => $rate ) {
@@ -185,6 +190,11 @@ final class Shipping_Calculator {
 			}
 		}
 
+		// A specific rate was requested but is no longer offered.
+		if ( '' !== $rate_id ) {
+			return null;
+		}
+
 		return $rates[0];
 	}
 
@@ -196,14 +206,14 @@ final class Shipping_Calculator {
 
 		$product_id   = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
 		$variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
-		$quantity     = isset( $_POST['quantity'] ) ? max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) : 1;
+		$quantity     = isset( $_POST['quantity'] ) ? min( 9999, max( 1, absint( wp_unslash( $_POST['quantity'] ) ) ) ) : 1;
 		$province     = isset( $_POST['province'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['province'] ) ) : '';
 		$ward         = isset( $_POST['ward'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['ward'] ) ) : '';
 
 		$target_id = $variation_id > 0 ? $variation_id : $product_id;
 		$product   = wc_get_product( $target_id );
 
-		if ( ! $product instanceof WC_Product ) {
+		if ( ! $product instanceof WC_Product || ! Trigger::is_publicly_available( $product ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Sản phẩm không hợp lệ.', 'hi-quick-buy' ) ),
 				400

@@ -24,3 +24,14 @@ delete_transient( 'hiqb_vn_locations_cache' );
 delete_transient( 'hiqb_vn_locations_v2_cache' );
 delete_transient( 'hiqb_github_release_cache' );
 
+// Remove short-lived per-IP rate limit transients (hiqb_rl_*).
+global $wpdb;
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+$wpdb->query(
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+		$wpdb->esc_like( '_transient_hiqb_rl_' ) . '%',
+		$wpdb->esc_like( '_transient_timeout_hiqb_rl_' ) . '%'
+	)
+);
+

@@ -244,6 +244,9 @@ final class Trigger {
 		$html .= '</button>';
 		$html .= '</div>';
 
+		// Load CSS/JS only on pages that really output a button.
+		Plugin::instance()->request_frontend_assets();
+
 		/**
 		 * Filter rendered Quick Buy trigger button HTML.
 		 *
@@ -255,10 +258,66 @@ final class Trigger {
 	}
 
 	/**
+	 * Whether the current visitor may see/order this product (or variation).
+	 *
+	 * Blocks unpublished (draft, pending, private, future, trash) and password-protected
+	 * products for anyone who cannot edit them, so public AJAX endpoints never leak them.
+	 */
+	public static function is_publicly_available( WC_Product $product ): bool {
+		if ( $product->is_type( 'variation' ) ) {
+			$parent = wc_get_product( $product->get_parent_id() );
+			if ( ! $parent instanceof WC_Product || ! self::is_publicly_available( $parent ) ) {
+				return false;
+			}
+		}
+
+		$product_id = $product->get_id();
+		if ( $product_id <= 0 ) {
+			return false;
+		}
+
+		if ( 'publish' !== $product->get_status() && ! current_user_can( 'edit_post', $product_id ) ) {
+			return false;
+		}
+
+		if ( post_password_required( $product_id ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Whether a variation of a variable product can be ordered through Quick Buy.
+	 *
+	 * @param WC_Product $variation      Variation candidate.
+	 * @param WC_Product $parent_product Expected parent product.
+	 */
+	public static function is_variation_orderable( WC_Product $variation, WC_Product $parent_product ): bool {
+		if ( ! $variation->is_type( 'variation' ) || $variation->get_parent_id() !== $parent_product->get_id() ) {
+			return false;
+		}
+
+		if ( 'publish' !== $variation->get_status() ) {
+			return false;
+		}
+
+		if ( $variation->is_purchasable() ) {
+			return true;
+		}
+
+		return '' === $variation->get_price() && (bool) Settings::get( 'allow_no_price' );
+	}
+
+	/**
 	 * Determine whether a product supports Quick Buy.
 	 */
 	private function is_product_eligible( WC_Product $product ): bool {
 		if ( $product->is_type( array( 'external', 'grouped' ) ) ) {
+			return false;
+		}
+
+		if ( ! self::is_publicly_available( $product ) ) {
 			return false;
 		}
 
