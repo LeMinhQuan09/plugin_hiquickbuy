@@ -47,6 +47,8 @@ final class Trigger {
 
 		if ( Settings::get( 'show_shop_loop' ) ) {
 			add_action( 'woocommerce_after_shop_loop_item', array( $this, 'render_shop_loop_button' ), 15 );
+			// Support modern WooCommerce Block Themes (Product Collection / Product Button block).
+			add_filter( 'render_block_woocommerce/product-button', array( $this, 'append_button_to_loop_block' ), 20, 3 );
 		}
 
 		add_shortcode( 'hi_quickbuy', array( $this, 'render_shortcode' ) );
@@ -144,6 +146,42 @@ final class Trigger {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped inside build_button_html().
 		echo $this->build_button_html(
+			$product,
+			array(
+				'context' => 'loop',
+			)
+		);
+	}
+
+	/**
+	 * Append Quick Buy button after WooCommerce Block Theme product-button blocks in shop/archive grids.
+	 *
+	 * @param string               $block_content Rendered block HTML.
+	 * @param array<string, mixed> $block         Parsed block array.
+	 * @param \WP_Block|null       $instance      Block instance with context.
+	 */
+	public function append_button_to_loop_block( string $block_content, array $block = array(), ?\WP_Block $instance = null ): string {
+		if ( is_admin() || str_contains( $block_content, 'hiqb-trigger-btn' ) ) {
+			return $block_content;
+		}
+
+		$product_id = 0;
+		if ( $instance instanceof \WP_Block && ! empty( $instance->context['postId'] ) ) {
+			$product_id = absint( $instance->context['postId'] );
+		} elseif ( get_the_ID() ) {
+			$product_id = absint( get_the_ID() );
+		}
+
+		if ( 0 === $product_id ) {
+			return $block_content;
+		}
+
+		$product = wc_get_product( $product_id );
+		if ( ! $product instanceof WC_Product ) {
+			return $block_content;
+		}
+
+		return $block_content . $this->build_button_html(
 			$product,
 			array(
 				'context' => 'loop',

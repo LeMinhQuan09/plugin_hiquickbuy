@@ -71,6 +71,49 @@
 			});
 		});
 
+		// Sync master "enabled" toggle with Single Product & Shop Loop placement toggles.
+		const enabledMaster = document.querySelector('input[name="hiqb_settings[enabled]"]');
+		const singleToggle = document.querySelector(
+			'input[name="hiqb_settings[show_single_product]"]'
+		);
+		const loopToggle = document.querySelector('input[name="hiqb_settings[show_shop_loop]"]');
+
+		if (enabledMaster && (singleToggle || loopToggle)) {
+			const placementToggles = [singleToggle, loopToggle].filter(Boolean);
+
+			const syncPlacementRows = () => {
+				const isOn = enabledMaster.checked;
+				placementToggles.forEach((el) => {
+					const row = el.closest('tr');
+					if (row) {
+						row.classList.toggle('hiqb-row--muted', !isOn);
+					}
+				});
+			};
+
+			enabledMaster.addEventListener('change', () => {
+				if (!enabledMaster.checked) {
+					placementToggles.forEach((el) => {
+						el.checked = false;
+					});
+				} else if (placementToggles.every((el) => !el.checked) && singleToggle) {
+					singleToggle.checked = true;
+				}
+				syncPlacementRows();
+			});
+
+			placementToggles.forEach((subToggle) => {
+				subToggle.addEventListener('change', () => {
+					if (subToggle.checked && !enabledMaster.checked) {
+						enabledMaster.checked = true;
+						syncPlacementRows();
+					}
+				});
+			});
+
+			syncPlacementRows();
+		}
+
 		// Sync master "show_payment_methods" toggle with COD & BACS sub-toggles.
 		const paymentMaster = document.querySelector(
 			'input[name="hiqb_settings[show_payment_methods]"]'

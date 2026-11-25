@@ -133,6 +133,11 @@
 	border-bottom: none;
 }
 
+.hiqb-admin-card .form-table tr.hiqb-row--muted {
+	opacity: 0.55;
+	transition: opacity 0.2s ease;
+}
+
 .hiqb-admin-card .form-table th {
 	width: 260px;
 	padding: 16px 16px 16px 0;

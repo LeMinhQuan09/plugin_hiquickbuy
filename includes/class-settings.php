@@ -140,6 +140,12 @@ final class Settings {
 			$sanitized[ $key ] = ! empty( $input[ $key ] ) ? 1 : 0;
 		}
 
+		// When the master switch is disabled, also turn off the placement sub-toggles.
+		if ( 0 === $sanitized['enabled'] ) {
+			$sanitized['show_single_product'] = 0;
+			$sanitized['show_shop_loop']      = 0;
+		}
+
 		// When payment method selection is disabled, turn off both COD and BACS;
 		// when enabled, keep at least COD active if both are unchecked.
 		if ( 0 === $sanitized['show_payment_methods'] ) {
